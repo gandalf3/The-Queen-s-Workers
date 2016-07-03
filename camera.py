@@ -1,6 +1,15 @@
 import bge
 import mathutils
 
+
+## TODO
+# refactor to use a class object (get rid of globals)
+# use vector from center to cursor to control pan direction
+# investigate using "pressure" to control pan speed in some way; else use timer to slowly speed up
+# use smooth zooming
+# adjust pan speed based on zoom (pan slower when closer)
+
+
 # for debugging
 bge.render.showMouse(True)
 
@@ -10,13 +19,11 @@ zoom_level = 5
 # inertia settings
 acceleration = .01
 damping = .96
-
 margin = 10
-
-
 edge_time = 1
 
 margin /= 100
+initial_height = bge.logic.getCurrentController().owner.worldPosition.z
 
 win_x = bge.render.getWindowWidth()
 win_y = bge.render.getWindowHeight()
@@ -35,15 +42,18 @@ bge.render.setMousePosition(int(win_x/2), int(win_y/2))
 momentum = mathutils.Vector((0,0))
 
 def zoom(cont):
+    global zoom_level
     own = cont.owner
     
     mouse_w_up = own.sensors['MouseWUp']
     mouse_w_down = own.sensors['MouseWDown']
     
     if mouse_w_up.positive:
-        mouse_wheel += 1
+        zoom_level -= 1
     elif mouse_w_down.positive:
-        mouse_wheel -= 1
+        zoom_level += 1
+        
+    own.worldPosition.z = initial_height + zoom_level * 10
     
 
 def pan(cont):
