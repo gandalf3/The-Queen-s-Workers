@@ -2,3 +2,6 @@
 # Blender backups
 *.blend1
 *.blend2
+
+# compiled python
+__pycache__
