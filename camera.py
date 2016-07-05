@@ -97,7 +97,7 @@ def pan(cont):
     momentum.x *= damping
     momentum.y *= damping
     
-    print(edge_time)
+    #print(edge_time)
     own.worldPosition.x += momentum.x
     own.worldPosition.y += momentum.y
     
