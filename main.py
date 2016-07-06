@@ -49,10 +49,23 @@ def scatter_resources(cont):
     r_tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
     
     
-    
-    
 
-def main(cont):
+ 
+def initialize(cont):
     own = cont.owner
+    
+    bge.logic.addScene('GUI')
+    
+    bge.logic.globalDict["food"] = 500
+    bge.logic.globalDict["material"] = 50
+    bge.logic.globalDict["science"] = 0
+    
+    bge.logic.globalDict["max_food"] = 500
+    bge.logic.globalDict["max_material"] = 500
+    bge.logic.globalDict["max_science"] = 500
+    
+    print("sending message")
+    bge.logic.sendMessage("GUI")
+    
     
     
