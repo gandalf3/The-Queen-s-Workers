@@ -1,5 +1,6 @@
 import bge
 from mathutils import Vector
+from ant import Ant
 import random
 
 # Lists of resource tile models
@@ -49,23 +50,31 @@ def scatter_resources(cont):
     r_tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
     
     
-
+def spawn_queen(cont):
+    own = cont.owner
+    
+    print("spawning queen")
+    own.worldPosition = Vector((0, 0, 0))
+    
+    queen = bge.logic.getCurrentScene().addObject("Queen ant mesh")
+    Ant(queen)
  
 def initialize(cont):
     own = cont.owner
     
     bge.logic.addScene('GUI')
     
-    bge.logic.globalDict["food"] = 500
+    bge.logic.globalDict["food"] = 50
     bge.logic.globalDict["material"] = 50
     bge.logic.globalDict["science"] = 0
     
-    bge.logic.globalDict["max_food"] = 500
-    bge.logic.globalDict["max_material"] = 500
-    bge.logic.globalDict["max_science"] = 500
+    bge.logic.globalDict["max_food"] = 100
+    bge.logic.globalDict["max_material"] = 100
+    bge.logic.globalDict["max_science"] = 100
     
-    print("sending message")
     bge.logic.sendMessage("GUI")
+    
+    spawn_queen(cont)
     
     
     
