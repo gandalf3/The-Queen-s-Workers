@@ -2,21 +2,43 @@ import bge
 from mathutils import Vector
 import random
 
-class Ant(bge.types.KX_GameObject):
+class Unit(bge.types.KX_GameObject):
     
     def __init__(self, own):
-        #self.task = "collect food"
-        self.pathing_target = bge.logic.getCurrentScene().objects["target"].worldPosition
+        pass
+        
+    def select(self):
+        pass
+        
+
+class Ant(bge.types.BL_ArmatureObject):
+    
+    def __init__(self, own):
+        
+        # Tasks
+        
+        # Go here
+        # Stay here
+        
+        #self.task = 
+        
+        # modes:
+        # DO_NOTHING
+        # GOTO
+        # WORK
+        self.mode = "GOTO"
+        self.target = Vector((10, 3))
         
         self.vision_distance = 5
         
         self.acceleration = .005
         self.max_speed = .1
         #self.max_turning_speed
+        self.near_sens = bge.logic.getCurrentController().sensors["Near"]
         
         self.speed = 0
         
-        #self.forward = self.worldOrientation.inverted_safe()[1]
+        self.velocity = Vector((0, 0, 0))
         
     def accelerate(self):
         if self.speed < self.max_speed:
@@ -25,47 +47,55 @@ class Ant(bge.types.KX_GameObject):
             
     def decelerate(self, urgency):
         self.speed -= self.acceleration * urgency
+        
+        
+    def towards_target(self):
+        dist, vect, lvect = self.getVectTo(self.target.to_3d())
+        return vect
     
     
-    def look_for_obstacles(self):
+    def around_obstacles(self):
         
         here = self.worldPosition
-        ahead = self.worldPosition + self.forward * self.vision_distance
+        ahead = self.worldPosition + self.velocity * self.vision_distance
         bge.render.drawLine(here, ahead, (1, 0, 1))
         obstacle = self.rayCastTo(ahead, self.vision_distance, "obstacle")
         if obstacle:
-            return obstacle
-        else:
-            return None
+            dist, go_around, l = self.getVectTo(obstacle)
+            go_around.z = 0
+            bge.render.drawLine(self.worldPosition, self.worldPosition - go_around, (0, 1, 0))
             
-    
-    def steer(self, direction):
-        self.alignAxisToVect(direction, 1, .08)
+            return -go_around
+        
+        else:
+            return Vector((0,0,0))
+        
+    def separate(self):
+        print(self.near_sens.hitObjectList)
+        
     
     def move(self):
-        self.worldPosition += self.forward * self.speed
+        if not self.isPlayingAction():
+#            print("starting walkcycle", self)
+            self.playAction("antwalking", 0, 12)
+            
+        self.worldPosition += self.velocity
         
     def main(self):
-        
         # insist upon being level at all times
         self.alignAxisToVect(Vector((0,0,1)), 2)
         
-        dist, vect, lvect = self.getVectTo(self.pathing_target)
-        self.forward = self.getAxisVect(Vector((0, 1, 0)))
-        print(self.forward)
-        #print()
-        
-        ob = self.look_for_obstacles()
-        if ob:
-            dist, go_around, l = self.getVectTo(ob)
-            go_around.z = 0
-            bge.render.drawLine(self.worldPosition, self.worldPosition - go_around, (0, 1, 0))
-            self.steer(-go_around)
-        else:
-            self.steer(vect)
-            
+        self.alignAxisToVect(-self.velocity, 1)
         
         self.accelerate()
+        
+        o = self.around_obstacles()
+        t = self.towards_target()
+        self.separate()
+        
+        self.velocity = o + t
+        self.velocity.normalize()
+        self.velocity *= self.speed
         
         self.move()
         

@@ -58,6 +58,11 @@ def spawn_queen(cont):
     
     queen = bge.logic.getCurrentScene().addObject("Queen ant mesh")
     Ant(queen)
+    
+def spawn_worker(cont):
+    own = cont.owner
+    if own.sensors[0].positive:
+        worker = bge.logic.getCurrentScene().addObject("Armature")
  
 def initialize(cont):
     own = cont.owner
