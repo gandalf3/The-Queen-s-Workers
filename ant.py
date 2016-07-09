@@ -32,7 +32,7 @@ class Ant(bge.types.BL_ArmatureObject):
         self.vision_distance = 5
         
         self.acceleration = .005
-        self.max_speed = .1
+        self.max_speed = 10
         #self.max_turning_speed
         self.near_sens = bge.logic.getCurrentController().sensors["Near"]
         
@@ -109,9 +109,14 @@ class Ant(bge.types.BL_ArmatureObject):
         t = self.towards_target()
         s = self.separate()
         
-        self.velocity = o + t + s
-        self.velocity.normalize()
-        self.velocity *= self.speed
+        new_velocity = o + t + s
+        new_velocity.normalize()
+        new_velocity *= .1
+        
+        if self.velocity == Vector((0,0,0)):
+            self.velocity = new_velocity
+        else:    
+            self.velocity.lerp(new_velocity, .7)
         
         self.move()
         
