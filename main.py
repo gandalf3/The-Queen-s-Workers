@@ -1,25 +1,79 @@
 import bge
-from mathutils import Vector
+from mathutils import Vector, Euler
 from ant import Ant
 import random
 
 
+def can_place(own):
+    
+    detector = bge.logic.getCurrentScene().addObject("Large_clearance_detector", own)
+    
+    #print(detector.sensors["TileCollision"].status)
+    
+    if detector.sensors["TileCollision"].positive:
+        print("something is in the way")
+        #detector.endObject()
+        return False
+    elif detector.sensors["PropCollision"].positive:
+        for o in detector.sensors["PropCollision"].hitObjectList:
+            print("removing grass")
+            o.endObject()
+        #detector.endObject()
+        return True
+    else:
+        #detector.endObject()
+        return True
 
 
-#def snap_coords_to_grid(coords):
-
-
+def spawn_object(cont, obj, coords, check=True):
+    own = cont.owner
+    oldpos = own.worldPosition.copy()
+    own.worldPosition = coords
+    
+    canplace = False
+    
+    if 0: # disable checking for available space for the moment, need to do this over multiple logic ticks it seems
+        if check:
+            if can_place(own):
+                canplace = True
+        else:
+            canplace = True
+    else:
+        canplace = True
+        
+        
+    if canplace:
+        ob = bge.logic.getCurrentScene().addObject(obj, own)
+        ob.worldOrientation.rotate(Euler((0, 0, random.random() * 360)))
+        own.worldPosition = oldpos
+        return ob
+    else:
+        own.worldPosition = oldpos
+        return False
+    
     
 
 def scatter_resources(cont):
     own = cont.owner
     
+    #for i in range(0, random.randint(3, 8)):
+        #add_food()
+        
+    #for i in range(0, random.randint(6, 12)):
+        #add_rock()
+        
+    for i in range(0, random.randint(3, 20)):
+        tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
+
+        spawn_object(cont, random.choice(["Rock1", "Rock2", "Rock3"]), tile.to_3d())
+        
+    for i in range(0, random.randint(300, 400)):
+        tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
+
+        spawn_object(cont, "Grass patch 1", tile.to_3d())
     
     
-    tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
-    
-    
-def spawn_queen(cont):
+def spawn_queen():
     own = cont.owner
     
     print("spawning queen")
@@ -53,6 +107,7 @@ def initialize(cont):
     bge.logic.sendMessage("GUI")
     
     #spawn_queen(cont)
+    scatter_resources(cont)
     
 def increment_day():
     day = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
