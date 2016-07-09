@@ -3,51 +3,18 @@ from mathutils import Vector
 from ant import Ant
 import random
 
-# Lists of resource tile models
-# please do add the name of new models to the appropriate list
-
-rocks = [
-"bouldertiles",
-"bouldertiles (variant)",
-"pebblestiles"
-]
-
-clay = [
-"claytiles"
-]
-
-fossils = [
-"fossiltiles"
-]
-
-honey = [
-"honeytiles",
-"honeytiles (variant)"
-]
-
-leaves = [ 
-"leaftiles"
-]
-
-roots = [
-"roottiles"
-]
-
-water = [
-"watertiles"
-]
 
 
 
 #def snap_coords_to_grid(coords):
 
-#def add_water
+
     
 
 def scatter_resources(cont):
     own = cont.owner
     
-    main_foodsource = random.choice(['honey', 'leaves'])
+    
     
     tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
     
@@ -88,5 +55,21 @@ def initialize(cont):
     #spawn_queen(cont)
     
 def increment_day():
-    bge.logic.globalDict["day"] = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
+    day = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
+    bge.logic.globalDict["day"] = day
     
+    yday = int(day % 365)
+    
+    
+    if yday >= int(365/4 * 3):
+        bge.logic.sendMessage("season_update", "winter")
+        bge.logic.globalDict["season"] = "Winter"
+    elif yday >= int(365/4 * 2):
+        bge.logic.sendMessage("season_update", "fall")
+        bge.logic.globalDict["season"] = "Fall"
+    elif yday >= int(365/4):
+        bge.logic.sendMessage("season_update", "summer")
+        bge.logic.globalDict["season"] = "Summer"
+    elif yday < int(365/4):
+        bge.logic.sendMessage("season_update", "spring")
+        bge.logic.globalDict["season"] = "Spring"
