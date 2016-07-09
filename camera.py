@@ -49,7 +49,7 @@ momentum = mathutils.Vector((0,0))
 
 def zoom_to_altitude(zoom_level):
     global max_speed
-    max_speed = (zoom_level/max_zoom) * .05
+    max_speed = max(zoom_level/max_zoom, .1) * .05
     
     return pow(zoom_level/zoom_steps * sqrt(min_zoom-max_zoom), 2) + max_zoom
 
