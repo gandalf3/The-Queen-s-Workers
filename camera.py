@@ -110,8 +110,9 @@ def pan(cont):
         momentum.y += pan_speed(edge_time)
         edge_time += 1
         
+        
     if not contact:
-        edge_time = 0
+        edge_time = 1
     
     momentum.x *= damping
     momentum.y *= damping
