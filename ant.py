@@ -38,6 +38,8 @@ class Ant(bge.types.BL_ArmatureObject):
         
         self.speed = 0
         
+        self.nearest_ant = 100
+        
         self.velocity = Vector((0, 0, 0))
         
     def accelerate(self):
@@ -71,7 +73,21 @@ class Ant(bge.types.BL_ArmatureObject):
             return Vector((0,0,0))
         
     def separate(self):
-        print(self.near_sens.hitObjectList)
+        
+        for ant in self.near_sens.hitObjectList:
+            if ant not in self.children:
+                vect = (self.worldPosition - ant.worldPosition)
+                if vect.length < self.nearest_ant:
+                    self.nearest_ant = vect.length
+        
+        if self.nearest_ant < 2 and vect:
+            bge.render.drawLine(self.worldPosition, self.worldPosition - vect, (1, 0, 0))
+            self.nearest_ant = 100
+            return vect
+        else:
+            return Vector((0,0,0))
+
+        
         
     
     def move(self):
@@ -91,9 +107,9 @@ class Ant(bge.types.BL_ArmatureObject):
         
         o = self.around_obstacles()
         t = self.towards_target()
-        self.separate()
+        s = self.separate()
         
-        self.velocity = o + t
+        self.velocity = o + t + s
         self.velocity.normalize()
         self.velocity *= self.speed
         
