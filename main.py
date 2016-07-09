@@ -40,6 +40,8 @@ water = [
 
 
 #def snap_coords_to_grid(coords):
+
+#def add_water
     
 
 def scatter_resources(cont):
@@ -47,7 +49,7 @@ def scatter_resources(cont):
     
     main_foodsource = random.choice(['honey', 'leaves'])
     
-    r_tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
+    tile = Vector(( random.randint(0, 256), random.randint(0, 256) ))
     
     
 def spawn_queen(cont):
@@ -63,7 +65,8 @@ def spawn_worker(cont):
     own = cont.owner
     if own.sensors[0].positive:
         worker = bge.logic.getCurrentScene().addObject("Armature")
- 
+        
+
 def initialize(cont):
     own = cont.owner
     
@@ -77,9 +80,13 @@ def initialize(cont):
     bge.logic.globalDict["max_material"] = 100
     bge.logic.globalDict["max_science"] = 100
     
+    bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
+    bge.logic.globalDict["day"] = 0
+    
     bge.logic.sendMessage("GUI")
     
     #spawn_queen(cont)
     
-    
+def increment_day():
+    bge.logic.globalDict["day"] = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
     
