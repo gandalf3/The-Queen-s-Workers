@@ -79,7 +79,7 @@ def initialize(cont):
     
     bge.logic.sendMessage("GUI")
     
-    spawn_queen(cont)
+    #spawn_queen(cont)
     
     
     
