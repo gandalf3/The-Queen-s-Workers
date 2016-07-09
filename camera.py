@@ -16,16 +16,19 @@ bge.render.showMouse(True)
 # number of steps of zoom
 zoom_steps = 7
 # lowest allowed camera altitude in BU
-max_zoom = 3
+max_zoom = 10
 # highest allowed camera altitude in BU
-min_zoom = 90
+min_zoom = 30
 # initial zoom level
 zoom_level = 4
 
 # inertia settings
 acceleration = .01
-damping = .96
+max_speed = .01
+damping = .93
 edge_time = 1
+# time needed to reach full pan speed
+acceleration_time = 60 # in logic ticks
 
 
 win_x = bge.render.getWindowWidth()
@@ -45,8 +48,8 @@ bge.render.setMousePosition(int(win_x/2), int(win_y/2))
 momentum = mathutils.Vector((0,0))
 
 def zoom_to_altitude(zoom_level):
-    global acceleration
-    acceleration = pow(clamp(zoom_level/zoom_steps, .3) * sqrt(.03), 2)
+    global max_speed
+    max_speed = (zoom_level/max_zoom) * .05
     
     return pow(zoom_level/zoom_steps * sqrt(min_zoom-max_zoom), 2) + max_zoom
 
@@ -69,6 +72,9 @@ def zoom(cont):
         
     own.worldPosition.z = lerp(own.worldPosition.z, target_altitude, .1)
     
+    
+def pan_speed(edge_time):
+    return pow(max(edge_time/acceleration_time, 1), 2) * max_speed
 
 def pan(cont):
     global edge_time
@@ -79,31 +85,33 @@ def pan(cont):
     
     mouse_x = mouse_pos[0]
     mouse_y = mouse_pos[1]
-  
+    
+    
+    contact = False
     
     if (mouse_x > win_x):
         contact = True
-        momentum.x += edge_time * acceleration
-        edge_time += 1 * acceleration
+        momentum.x += pan_speed(edge_time)
+        edge_time += 1
         
     elif (mouse_x < 0):
         contact = True
-        momentum.x -= edge_time * acceleration
-        edge_time += 1 * acceleration
-
+        momentum.x -= pan_speed(edge_time)
+        edge_time += 1
+    
         
     if (mouse_y > win_y):
         contact = True
-        momentum.y -= edge_time * acceleration
-        edge_time += 1 * acceleration
+        momentum.y -= pan_speed(edge_time)
+        edge_time += 1
         
     elif (mouse_y < 0):
         contact = True
-        momentum.y += edge_time * acceleration
-        edge_time += 1 * acceleration
+        momentum.y += pan_speed(edge_time)
+        edge_time += 1
         
-#    if contact:
-#        edge_time = 1
+    if not contact:
+        edge_time = 0
     
     momentum.x *= damping
     momentum.y *= damping
