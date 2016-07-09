@@ -36,8 +36,9 @@ class Ant(bge.types.BL_ArmatureObject):
         #self.max_turning_speed
         self.near_sens = bge.logic.getCurrentController().sensors["Near"]
         
-        self.speed = 0
+        self.zoffset = self.worldPosition.copy().z
         
+        self.speed = 0
         self.nearest_ant = 100
         
         self.velocity = Vector((0, 0, 0))
@@ -98,8 +99,10 @@ class Ant(bge.types.BL_ArmatureObject):
         self.worldPosition += self.velocity
         
     def main(self):
-        # insist upon being level at all times
-        self.alignAxisToVect(Vector((0,0,1)), 2)
+        # insist upon being at ground level at all times
+        obj, hitpoint, normal = self.rayCast(self.worldPosition + Vector((0,0,-1)), self.worldPosition + Vector((0,0,1)), 10, "Ground", 0, 1)
+        self.worldPosition.z = hitpoint.z + self.zoffset
+        self.alignAxisToVect(normal, 2)
         
         self.alignAxisToVect(-self.velocity, 1)
         
