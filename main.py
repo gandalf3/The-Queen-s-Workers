@@ -1,76 +1,87 @@
 import bge
 from mathutils import Vector, Euler
 from ant import Ant
+from detector import Detector
 import random
 
+# Lists of resource tile models
+# please do add the name of new models to the appropriate list
 
-def can_place(own):
-    
-    detector = bge.logic.getCurrentScene().addObject("Large_clearance_detector", own)
-    
-    #print(detector.sensors["TileCollision"].status)
-    
-    if detector.sensors["TileCollision"].positive:
-        print("something is in the way")
-        #detector.endObject()
-        return False
-    elif detector.sensors["PropCollision"].positive:
-        for o in detector.sensors["PropCollision"].hitObjectList:
-            print("removing grass")
-            o.endObject()
-        #detector.endObject()
-        return True
-    else:
-        #detector.endObject()
-        return True
+rocks = [
+"bouldertiles",
+"bouldertiles (variant)",
+"pebblestiles"
+]
 
+clay = [
+"claytiles"
+]
 
-def spawn_object(cont, obj, coords, check=True):
+fossils = [
+"fossiltiles"
+]
+
+honey = [
+"honeytiles",
+"honeytiles (variant)"
+]
+
+leaves = [ 
+"leaftiles"
+]
+
+roots = [
+"roottiles"
+]
+
+water = [
+"watertiles"
+]
+
+def spawn_object(cont, obj, coords,):
     own = cont.owner
     oldpos = own.worldPosition.copy()
     own.worldPosition = coords
     
-    canplace = False
+    ob = bge.logic.getCurrentScene().addObject(obj, own)
+    ob.worldOrientation.rotate(Euler((0, 0, random.random() * 360)))
+    own.worldPosition = oldpos
+
+    return ob
+
+def spawn_resource(tiles, min_amount, max_amount):
+    cont = bge.logic.getCurrentController()
     
-    if 0: # disable checking for available space for the moment, need to do this over multiple logic ticks it seems
-        if check:
-            if can_place(own):
-                canplace = True
-        else:
-            canplace = True
-    else:
-        canplace = True
+    for i in range(0, random.randint(min_amount, max_amount)):
+        tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
         
-        
-    if canplace:
-        ob = bge.logic.getCurrentScene().addObject(obj, own)
-        ob.worldOrientation.rotate(Euler((0, 0, random.random() * 360)))
-        own.worldPosition = oldpos
-        return ob
-    else:
-        own.worldPosition = oldpos
-        return False
-    
-    
+        # leave a clearing in the center of the map
+        if tile.length > 15:
+            d = spawn_object(cont, "Large_clearance_detector", tile.to_3d())
+            Detector(d, random.choice(tiles))
 
 def scatter_resources(cont):
     own = cont.owner
     
-    #for i in range(0, random.randint(3, 8)):
-        #add_food()
+    
+    spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
+    
+    spawn_resource(["Grass patch 1_mesh"], 300, 400)
+    
+    spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
+    
+    spawn_resource(["Rock Small1", "Rock Small2", "Rock Small3"], 30, 40)
+    
+    if bge.logic.globalDict["primary_food"] == "honey":
+        spawn_resource(honey, 20, 30)
+        spawn_resource(leaves, 2, 5)
+    else:
+        spawn_resource(leaves, 20, 30)
+        spawn_resource(honey, 2, 5)
         
-    #for i in range(0, random.randint(6, 12)):
-        #add_rock()
-        
-    for i in range(0, random.randint(3, 20)):
-        tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
-
-        spawn_object(cont, random.choice(["Rock1", "Rock2", "Rock3"]), tile.to_3d())
-        
-    for i in range(0, random.randint(300, 400)):
-        tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
-
-        spawn_object(cont, "Grass patch 1", tile.to_3d())
+    spawn_resource(roots, 20, 30)
+    spawn_resource(fossils, 2, 7)
+    spawn_resource(water, 30, 40)
     
     
 def spawn_queen():
@@ -104,10 +115,13 @@ def initialize(cont):
     bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
     bge.logic.globalDict["day"] = 0
     
+    # Refresh resourcecounts
     bge.logic.sendMessage("GUI")
     
-    #spawn_queen(cont)
+    bge.logic.globalDict["primary_food"] = random.choice(["honey", "leaves"])
+    
     scatter_resources(cont)
+    #spawn_queen(cont)
     
 def increment_day():
     day = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
