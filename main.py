@@ -66,7 +66,7 @@ def scatter_resources(cont):
     
     spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
     
-    spawn_resource(["Grass patch 1_mesh"], 300, 400)
+    spawn_resource(["Grass patch 1"], 300, 400)
     
     spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
     
@@ -122,6 +122,7 @@ def initialize(cont):
     bge.logic.globalDict["primary_food"] = random.choice(["honey", "leaves"])
     
     scatter_resources(cont)
+    
     #spawn_queen(cont)
     
 def increment_day():
