@@ -78,7 +78,8 @@ def scatter_resources(cont):
     else:
         spawn_resource(leaves, 20, 30)
         spawn_resource(honey, 2, 5)
-        
+    
+    spawn_resource(clay, 50, 80)
     spawn_resource(roots, 20, 30)
     spawn_resource(fossils, 2, 7)
     spawn_resource(water, 30, 40)
