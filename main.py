@@ -56,7 +56,7 @@ def spawn_resource(tiles, min_amount, max_amount):
         tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
         
         # leave a clearing in the center of the map
-        if tile.length > 15:
+        if tile.length > 20:
             d = spawn_object(cont, "Large_clearance_detector", tile.to_3d())
             Detector(d, random.choice(tiles))
 
