@@ -27,15 +27,15 @@ class Ant(bge.types.BL_ArmatureObject):
         # GOTO
         # WORK
         self.mode = "GOTO"
-        self.target = Vector((10, 3))
+        self.target = Vector((0, 0, 0))
         
         self.vision_distance = 5
-        self.stopping_margin = 1
+        self.stopping_margin = 1.3
         
         self.acceleration = .005
         self.max_speed = .1
         #self.max_turning_speed
-        self.near_sens = bge.logic.getCurrentController().sensors["Near"]
+        self.near_sens = self.sensors["Near"]
         
         self.zoffset = self.worldPosition.copy().z
         
@@ -53,7 +53,7 @@ class Ant(bge.types.BL_ArmatureObject):
         vect.normalize()
 
         if dist < self.vision_distance:
-            # apply braking force proportional to distance, reversing if needed
+            # apply braking force proportional to distance
             vect = vect - (vect * min((dist/-self.vision_distance) + 1/self.vision_distance + self.stopping_margin, 1))
         else:
             # apply acceleration
@@ -97,10 +97,12 @@ class Ant(bge.types.BL_ArmatureObject):
     
     def move(self):
         if not self.isPlayingAction():
-#            print("starting walkcycle", self)
-            self.playAction("antwalking", 0, 12, )
+            self.playAction("antwalking", 0, 12)
             
-        self.alignAxisToVect(-self.direction, 1)
+        self.setActionFrame(self.getActionFrame()+self.direction.length)
+        
+        if not self.direction.length < 0.000001:
+            self.alignAxisToVect(-self.direction, 1)
         self.worldPosition += self.direction * self.max_speed
         
     def main(self):
