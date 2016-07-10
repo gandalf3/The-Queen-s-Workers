@@ -10,8 +10,6 @@ from utils import clamp, lerp
 # investigate using "pressure" to control pan speed in some way; else use timer to slowly speed up
 # adjust pan speed based on resolution as well
 
-# for debugging
-# bge.render.showMouse(True)
 
 # number of steps of zoom
 zoom_steps = 7
@@ -20,7 +18,7 @@ max_zoom = 4
 # highest allowed camera altitude in BU
 min_zoom = 40
 # initial zoom level
-zoom_level = 4
+zoom_level = 2
 
 # inertia settings
 acceleration = .01

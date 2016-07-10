@@ -9,12 +9,12 @@ import random
 
 rocks = [
 "bouldertiles",
-"bouldertiles (variant)",
-"pebblestiles"
+"bouldertiles (variant)"
 ]
 
 clay = [
-"claytiles"
+"claytiles",
+"pebblestiles"
 ]
 
 fossils = [
@@ -26,7 +26,7 @@ honey = [
 "honeytiles (variant)"
 ]
 
-leaves = [ 
+leaves = [
 "leaftiles"
 ]
 
@@ -56,74 +56,104 @@ def spawn_resource(tiles, min_amount, max_amount):
         tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
         
         # leave a clearing in the center of the map
-        if tile.length > 20:
+        if tile.length > 14:
             d = spawn_object(cont, "Large_clearance_detector", tile.to_3d())
-            Detector(d, random.choice(tiles))
+            Detector(d, random.choice(tiles), i)
 
 def scatter_resources(cont):
     own = cont.owner
+    own["elapsed"] = own.get("elapsed", 0) + 1
     
+    if own["elapsed"] == 1:
+        spawn_resource(["Rock1", "Rock2", "Rock3", "Suzock"], 40, 60)
+        bge.logic.sendMessage("loadprogress", str(.1))
     
-    spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
+    if own["elapsed"] == 2:
+        spawn_resource(["Grass patch 1", "Grass patch 2"], 400, 600)
+        bge.logic.sendMessage("loadprogress", str(.2))
+
+    if own["elapsed"] == 3:
+        spawn_resource(["Rock Small1", "Rock Small2", "Rock Small3", "Rock Small4", "Rock Small5", "Rock Small6"], 100, 200)
+        bge.logic.sendMessage("loadprogress", str(.3))
+
+    if own["elapsed"] == 4:
+        spawn_resource(["acorn"], 10, 20)
+        bge.logic.sendMessage("loadprogress", str(.4))
+
+    if own["elapsed"] == 5:
+        if bge.logic.globalDict["primary_food"] == "honey":
+            spawn_resource(honey, 20, 30)
+            spawn_resource(leaves, 2, 5)
+        else:
+            spawn_resource(leaves, 20, 30)
+            spawn_resource(honey, 2, 5)
+        bge.logic.sendMessage("loadprogress", str(.5))
     
-    spawn_resource(["Grass patch 1", "Grass patch 2"], 300, 400)
+    if own["elapsed"] == 6:
+        spawn_resource(clay, 50, 80)
+        bge.logic.sendMessage("loadprogress", str(.6))
+
+    if own["elapsed"] == 7:
+        spawn_resource(roots, 20, 30)
+        bge.logic.sendMessage("loadprogress", str(.7))
+
+    if own["elapsed"] == 8:
+        spawn_resource(fossils, 2, 7)
+        bge.logic.sendMessage("loadprogress", str(.8))
+
+    if own["elapsed"] == 9:
+        spawn_resource(water, 30, 40)
+        bge.logic.sendMessage("loadprogress", str(.9))
     
-    spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
+    if own["elapsed"] == 10:
+        spawn_resource(["Grass patch 1", "Grass patch 2"], 400, 600)
+        bge.logic.sendMessage("loadprogress", str(1))
+
+    if own["elapsed"] >= 12:
+        if "Large_clearance_detector" not in bge.logic.getCurrentScene().objects:
+            bge.logic.sendMessage("loaded")
+        
     
-    spawn_resource(["Rock Small1", "Rock Small2", "Rock Small3", "Rock Small4", "Rock Small5", "Rock Small6"], 30, 40)
-    
-    if bge.logic.globalDict["primary_food"] == "honey":
-        spawn_resource(honey, 20, 30)
-        spawn_resource(leaves, 2, 5)
-    else:
-        spawn_resource(leaves, 20, 30)
-        spawn_resource(honey, 2, 5)
-    
-    spawn_resource(clay, 50, 80)
-    spawn_resource(roots, 20, 30)
-    spawn_resource(fossils, 2, 7)
-    spawn_resource(water, 30, 40)
-    
-    
-def spawn_queen():
+def spawn_queen(cont):
     own = cont.owner
     
     print("spawning queen")
     own.worldPosition = Vector((0, 0, 0))
     
-    queen = bge.logic.getCurrentScene().addObject("Queen ant mesh")
+    queen = bge.logic.getCurrentScene().addObject("Armature")
     Ant(queen)
     
 def spawn_worker(cont):
     own = cont.owner
-    if own.sensors[0].positive:
-        worker = bge.logic.getCurrentScene().addObject("Armature")
+    worker = bge.logic.getCurrentScene().addObject("Armature")
         
 
 def initialize(cont):
     own = cont.owner
-    
-    bge.logic.addScene('GUI')
-    
-    bge.logic.globalDict["food"] = 50
-    bge.logic.globalDict["material"] = 50
-    bge.logic.globalDict["science"] = 0
-    
-    bge.logic.globalDict["max_food"] = 100
-    bge.logic.globalDict["max_material"] = 100
-    bge.logic.globalDict["max_science"] = 100
-    
-    bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
-    bge.logic.globalDict["day"] = 0
-    
-    # Refresh resourcecounts
-    bge.logic.sendMessage("GUI")
-    
-    bge.logic.globalDict["primary_food"] = random.choice(["honey", "leaves"])
-    
-    scatter_resources(cont)
-    
-    #spawn_queen(cont)
+    sens = cont.sensors[0]
+    if sens.positive:
+        
+        bge.logic.addScene('GUI')
+        
+        bge.logic.globalDict["food"] = 50
+        bge.logic.globalDict["material"] = 50
+        bge.logic.globalDict["science"] = 0
+        
+        bge.logic.globalDict["max_food"] = 100
+        bge.logic.globalDict["max_material"] = 100
+        bge.logic.globalDict["max_science"] = 100
+        
+        bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
+        bge.logic.globalDict["day"] = 0
+        
+        # Refresh resourcecounts
+        bge.logic.sendMessage("GUI")
+        
+        bge.logic.globalDict["primary_food"] = random.choice(["honey", "leaves"])
+        
+        #scatter_resources(cont)
+        
+        spawn_queen(cont)
     
 def increment_day():
     day = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]
