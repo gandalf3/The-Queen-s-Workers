@@ -66,11 +66,11 @@ def scatter_resources(cont):
     
     spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
     
-    spawn_resource(["Grass patch 1"], 300, 400)
+    spawn_resource(["Grass patch 1", "Grass patch 2"], 300, 400)
     
     spawn_resource(["Rock1", "Rock2", "Rock3"], 10, 20)
     
-    spawn_resource(["Rock Small1", "Rock Small2", "Rock Small3"], 30, 40)
+    spawn_resource(["Rock Small1", "Rock Small2", "Rock Small3", "Rock Small4", "Rock Small5", "Rock Small6"], 30, 40)
     
     if bge.logic.globalDict["primary_food"] == "honey":
         spawn_resource(honey, 20, 30)

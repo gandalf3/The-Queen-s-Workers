@@ -11,7 +11,7 @@ from utils import clamp, lerp
 # adjust pan speed based on resolution as well
 
 # for debugging
-bge.render.showMouse(True)
+# bge.render.showMouse(True)
 
 # number of steps of zoom
 zoom_steps = 7

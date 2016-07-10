@@ -30,43 +30,47 @@ class Ant(bge.types.BL_ArmatureObject):
         self.target = Vector((10, 3))
         
         self.vision_distance = 5
+        self.stopping_margin = 1
         
         self.acceleration = .005
-        self.max_speed = 10
+        self.max_speed = .1
         #self.max_turning_speed
         self.near_sens = bge.logic.getCurrentController().sensors["Near"]
         
         self.zoffset = self.worldPosition.copy().z
         
-        self.speed = 0
         self.nearest_ant = 100
         
-        self.velocity = Vector((0, 0, 0))
+        self.speed = 0
+        self.target_direction = Vector((0, -1, 0))
+        self.direction = self.getAxisVect((0,-1,0))
         
-    def accelerate(self):
-        if self.speed < self.max_speed:
-            self.speed += self.acceleration
-    
-            
-    def decelerate(self, urgency):
-        self.speed -= self.acceleration * urgency
         
         
     def towards_target(self):
         dist, vect, lvect = self.getVectTo(self.target.to_3d())
+        
+        vect.normalize()
+
+        if dist < self.vision_distance:
+            # apply braking force proportional to distance, reversing if needed
+            vect = vect - (vect * min((dist/-self.vision_distance) + 1/self.vision_distance + self.stopping_margin, 1))
+        else:
+            # apply acceleration
+            pass
+        
         return vect
     
     
     def around_obstacles(self):
         
         here = self.worldPosition
-        ahead = self.worldPosition + self.velocity * self.vision_distance
-        bge.render.drawLine(here, ahead, (1, 0, 1))
+        ahead = self.worldPosition + self.direction * self.vision_distance
+        
         obstacle = self.rayCastTo(ahead, self.vision_distance, "obstacle")
         if obstacle:
             dist, go_around, l = self.getVectTo(obstacle)
             go_around.z = 0
-            bge.render.drawLine(self.worldPosition, self.worldPosition - go_around, (0, 1, 0))
             
             return -go_around
         
@@ -94,9 +98,10 @@ class Ant(bge.types.BL_ArmatureObject):
     def move(self):
         if not self.isPlayingAction():
 #            print("starting walkcycle", self)
-            self.playAction("antwalking", 0, 12)
+            self.playAction("antwalking", 0, 12, )
             
-        self.worldPosition += self.velocity
+        self.alignAxisToVect(-self.direction, 1)
+        self.worldPosition += self.direction * self.max_speed
         
     def main(self):
         # insist upon being at ground level at all times
@@ -104,22 +109,20 @@ class Ant(bge.types.BL_ArmatureObject):
         self.worldPosition.z = hitpoint.z + self.zoffset
         self.alignAxisToVect(normal, 2)
         
-        self.alignAxisToVect(-self.velocity, 1)
+        #self.accelerate()
         
-        self.accelerate()
+        bge.render.drawLine(self.worldPosition, self.target.to_3d(), (1, 1, 1))
         
         o = self.around_obstacles()
         t = self.towards_target()
         s = self.separate()
         
-        new_velocity = o + t + s
-        new_velocity.normalize()
-        new_velocity *= .1
+        self.target_direction = o + t + s
+        self.target_direction.normalize()
         
-        if self.velocity == Vector((0,0,0)):
-            self.velocity = new_velocity
-        else:    
-            self.velocity.lerp(new_velocity, .7)
+        bge.render.drawLine(self.worldPosition, self.worldPosition + self.target_direction*10, (1, 0, 0))
+        
+        self.direction = self.direction.lerp(self.target_direction, .05)
         
         self.move()
         
