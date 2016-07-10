@@ -18,10 +18,7 @@ def box_selection(cont):
     if click.positive:
         if own['held']:
             a = Vector(logic.mouse.position)
-            
-            a_t = cam.camera_to_world * a.to_3d()
-            b_t = cam.camera_to_world * b.to_3d()
-            draw_box(a_t, b_t)
+            draw_box(a, b)
         else:
             a = Vector(logic.mouse.position)
             b = a.copy()
@@ -31,21 +28,14 @@ def box_selection(cont):
     else:
         if own['held']:
             print("select")
-            #select_inside(own['m_x_old'],own['m_y_old'],own['m_x_new'],own['m_y_new'])
+            #select_inside(a, b)
             own['held'] = False
 
 
-def  select_inside(p1_x,p1_y, p2_x,p2_y):
+def  select_inside(a, b):
 
-    if p1_x > p2_x :
-        p = p2_x
-        p2_x = p1_x
-        p1_x = p
-
-    if p1_y > p2_y :
-        p = p2_y
-        p2_y = p1_y
-        p1_y = p
+    #a_t = cam.camera_to_world * a.to_3d()
+    #b_t = cam.camera_to_world * b.to_3d()
 
     scene = logic.getCurrentScene()
     cam = scene.active_camera
@@ -63,6 +53,17 @@ def  select_inside(p1_x,p1_y, p2_x,p2_y):
 
 def draw_box(a, b):  # there is some distortion in the drawing
     color = (1,1,1)
+    
+    a = a.copy()
+    b = b.copy()
+    
+    a.x = a.x*16 - 8
+    b.x = b.x*16 - 8
+    a.y = a.y*9 - 4.5
+    b.y = b.y*9 - 4.5
+    
+    a.y *= -1
+    b.y *= -1
     
     print(a, b)
 
