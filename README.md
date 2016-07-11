@@ -5,7 +5,9 @@ Made by :
 
 ARadish	concept, modeling, art, etc
 gandalf3	game mechanics. python. (made evreything work and look cool)
-X-27	building system, other game mechanics, some prettyifiying
+X-27	building system, other game mechanics, some prettyifiying, implemented easter egg.
+
+^^^ that was a big hint - you wouldn't have possibly found the buttons to activate the Easter Egg without reading this file.
 
 
 
