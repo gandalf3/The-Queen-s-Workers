@@ -1,23 +1,41 @@
 from bge import logic, render
-from mathutils import Vector
+from mathutils import geometry, Vector
 
 # from http://blender.stackexchange.com/a/28133/599
 # and http://blender.stackexchange.com/a/2156/599
 
 b = None
+a_w = None
+b_w = None
 
-def box_selection(cont):
+def get_world_coords(coords):
+    cont = logic.getCurrentController()
+    ray = cont.sensors["MouseRay"]
+    
+    ray_start = ray.raySource
+    ray_end = ray.rayTarget
+    
+    plane_origin = Vector((0, 0, 0))
+    plane_normal = Vector((0, 0, 1))
+    
+    intersection = geometry.intersect_line_plane(ray_start, ray_end, plane_origin, plane_normal)
+    if intersection:
+        return intersection
+
+def box_selection_vis(cont):
     global b
+    print("HALLO")
     scene = logic.getCurrentScene()
     cam = scene.active_camera
     own = cont.owner
 
-    click = cont.sensors["MouseClick"] 
-
-
+    click = cont.sensors["MouseClick"]
+    
     if click.positive:
         if own['held']:
             a = Vector(logic.mouse.position)
+            
+            print("draw")
             draw_box(a, b)
         else:
             a = Vector(logic.mouse.position)
@@ -27,32 +45,55 @@ def box_selection(cont):
 
     else:
         if own['held']:
+            own['held'] = False
+            
+            
+def box_selection(cont):
+    global b_w
+    global a_w
+    scene = logic.getCurrentScene()
+    cam = scene.active_camera
+    own = cont.owner
+
+    click = cont.sensors["MouseClick"]
+    
+    if click.positive:
+        if own['held']:
+            a_w = get_world_coords(Vector(logic.mouse.position))
+            
+        else:
+            a_w = get_world_coords(Vector(logic.mouse.position))
+            b_w = a_w.copy()
+            own['held'] = True
+        
+
+    else:
+        if own['held']:
             print("select")
-            #select_inside(a, b)
+            select_inside(a_w, b_w)
             own['held'] = False
 
 
 def  select_inside(a, b):
 
-    #a_t = cam.camera_to_world * a.to_3d()
-    #b_t = cam.camera_to_world * b.to_3d()
+    p1 = Vector((a.x, a.y))
+    p2 = Vector((b.x, a.y))
+    p3 = Vector((b.x, b.y))
+    p4 = Vector((a.x, b.y))
 
     scene = logic.getCurrentScene()
     cam = scene.active_camera
 
-    for obj in scene.objects :
-        if 'Select' in obj.getPropertyNames() :
-            print('select found!', obj.name)
-            pos = cam.getScreenPosition(obj)
-            x = pos[0] * render.getWindowWidth()
-            y = pos[1] * render.getWindowHeight()
-            if x > p1_x and y > p1_y and x < p2_x and y < p2_y :
-                print('obj inside')
-                obj['Select'] = True
+    for obj in scene.objects:
+        if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
+            print("selected", obj)
+            
 
 
-def draw_box(a, b):  # there is some distortion in the drawing
+def draw_box(a, b):
     color = (1,1,1)
+    
+    print(a, b)
     
     a = a.copy()
     b = b.copy()
