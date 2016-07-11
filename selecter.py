@@ -24,7 +24,6 @@ def get_world_coords(coords):
 
 def box_selection_vis(cont):
     global b
-    print("HALLO")
     scene = logic.getCurrentScene()
     cam = scene.active_camera
     own = cont.owner
@@ -35,7 +34,6 @@ def box_selection_vis(cont):
         if own['held']:
             a = Vector(logic.mouse.position)
             
-            print("draw")
             draw_box(a, b)
         else:
             a = Vector(logic.mouse.position)
@@ -69,12 +67,13 @@ def box_selection(cont):
 
     else:
         if own['held']:
-            print("select")
             select_inside(a_w, b_w)
             own['held'] = False
 
 
 def  select_inside(a, b):
+    cont = logic.getCurrentController()
+    shift = cont.sensors["Keyboard"]
 
     p1 = Vector((a.x, a.y))
     p2 = Vector((b.x, a.y))
@@ -85,15 +84,37 @@ def  select_inside(a, b):
     cam = scene.active_camera
 
     for obj in scene.objects:
-        if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
-            print("selected", obj)
+        if "ant" in obj:
+            print("found an ant")
             
-
+            # remove existing selection unless shift is held
+            if not shift.positive:
+                if obj.get("selected", False):
+                    obj["selected"] = None
+                    highlight(obj, False)
+            
+            if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
+                print("selected", obj)
+                obj["selected"] = True
+                highlight(obj, True)
+            
+def highlight(obj, enable=True):
+    for o in obj.children:
+        for mesh in o.meshes:
+            for mat in mesh.materials:
+                print("asdf")
+                if enable:
+                    print(mat.emit)
+                    mat.emit = 100
+                    print(mat.emit)
+                else:
+                    print("disabled")
+                    mat.emit = 0
+            
+            
 
 def draw_box(a, b):
     color = (1,1,1)
-    
-    print(a, b)
     
     a = a.copy()
     b = b.copy()
@@ -105,8 +126,6 @@ def draw_box(a, b):
     
     a.y *= -1
     b.y *= -1
-    
-    print(a, b)
 
     p1 = Vector((a.x, a.y)).to_3d()
     p2 = Vector((b.x, a.y)).to_3d()

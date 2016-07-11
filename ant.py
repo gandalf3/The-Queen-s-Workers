@@ -91,21 +91,30 @@ class Ant(bge.types.BL_ArmatureObject):
             return vect
         else:
             return Vector((0,0,0))
-
-        
         
     
     def move(self):
         if not self.isPlayingAction():
-            self.playAction("antwalking", 0, 12)
-            
-        self.setActionFrame(self.getActionFrame()+self.direction.length)
+            self.playAction("antwalking", 0, 12, 0, 0, 0, bge.logic.KX_ACTION_MODE_LOOP)
+        
+        print(self.getActionFrame())
+        self.setActionFrame((self.getActionFrame()+self.direction.length)%12)
         
         if not self.direction.length < 0.000001:
             self.alignAxisToVect(-self.direction, 1)
         self.worldPosition += self.direction * self.max_speed
         
     def main(self):
+        
+        # order taking
+        if self["selected"]:
+            if self.sensors["Click"].positive and self.sensors["CanGo"].positive:
+                print("going")
+                self.target = self.sensors["CanGo"].hitPosition
+        
+        # decision making
+        
+        
         # insist upon being at ground level at all times
         obj, hitpoint, normal = self.rayCast(self.worldPosition + Vector((0,0,-1)), self.worldPosition + Vector((0,0,1)), 10, "Ground", 0, 1)
         self.worldPosition.z = hitpoint.z + self.zoffset

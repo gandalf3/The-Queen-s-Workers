@@ -120,12 +120,12 @@ def spawn_queen(cont):
     print("spawning queen")
     own.worldPosition = Vector((0, 0, 0))
     
-    queen = bge.logic.getCurrentScene().addObject("Armature")
+    queen = bge.logic.getCurrentScene().addObject("Ant")
     Ant(queen)
     
 def spawn_worker(cont):
     own = cont.owner
-    worker = bge.logic.getCurrentScene().addObject("Armature")
+    worker = bge.logic.getCurrentScene().addObject("Ant")
         
 
 def initialize(cont):
