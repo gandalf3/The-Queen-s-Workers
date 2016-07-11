@@ -1,4 +1,5 @@
 import bge
+from resources import increase_resource
 from main import spawn_worker
 import random
 
@@ -22,3 +23,25 @@ def den(cont):
         if bge.logic.globalDict["pop"] < bge.logic.globalDict["max_pop"]:
             print(bge.logic.globalDict["pop"])
             spawn_worker(cont)
+            
+            
+        
+def honeyden(cont):
+    own = cont.owner
+    sens = cont.sensors[0]
+    
+    if random.random() < own["efficiency"]*.04:
+        if own["stored"] > 1/own["efficiency"]:
+            own["stored"] -= 1/own["efficiency"]
+
+            increase_resource(own, food)
+
+def farm(cont):
+    own = cont.owner
+    sens = cont.sensors[0]
+    
+    if random.random() < own["efficiency"]*.05:
+        if own["stored"] > 1/own["efficiency"]:
+            own["stored"] -= 1/own["efficiency"]
+
+            increase_resource(own, food)

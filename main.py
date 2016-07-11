@@ -114,7 +114,6 @@ def scatter_resources(cont):
             bge.logic.sendMessage("loaded")
         
 
-    
 def spawn_queen(cont):
     own = cont.owner
     

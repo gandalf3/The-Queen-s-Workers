@@ -1,4 +1,5 @@
 import bge
+from resources import increase_resource
 from mathutils import Vector, noise
 import random
 
@@ -186,7 +187,7 @@ class Ant(bge.types.BL_ArmatureObject):
                     if "points" in obj:
                         print("You clicked a Resource!")
                         self.collect = obj
-                        self.target = self.collect.worldPosition
+                        self.target = self.collect.worldPosition.copy()
                         
                         self.collect_type = self.collect["type"]
                         self.collect_category = self.collect["category"]
@@ -209,13 +210,26 @@ class Ant(bge.types.BL_ArmatureObject):
         if self.collect is not None and not self.collect.invalid:
             
             if self.carrying is not None:
+                
+                self.carrying.worldPosition = self.worldPosition
+                
                 # return with resource
                 if (self.worldPosition - self.destination.worldPosition).length < 1.5:
                     print("turning in resource")
+                    
+                    if self.collect_category == "food":
+                        if "stored" in self.destination:
+                            self.destination['stored'] += 1
+                        else:
+                            increase_resource(self, "food")
+                    else:
+                        increase_resource(self, self.collect_category)
+
+                    self.carrying.endObject()
                     self.carrying = None
                     
                     if self.collect:
-                        self.target = self.collect.worldPosition
+                        self.target = self.collect.worldPosition.copy()
 
             else: 
                 # go get resource
@@ -224,12 +238,15 @@ class Ant(bge.types.BL_ArmatureObject):
                         
                     if self.collect["points"] > 1:
                         self.collect["points"] -= 1
-                        self.carrying = self.collect_type
+                        
+                        self.carrying = bge.logic.getCurrentScene().addObject(self.collect_type + "fragment", self)
                     else:
                         print("resource run out")
-                        self.parent.endObject()
+                        
+                        self.collect.parent.endObject()
                         self.collect.endObject()
                         self.collect = None
+                        bge.logic.globalDict[self.collect_category + "workers"] -= 1
                     
                     # determine nearest dropoff point
                     if self.collect_type == "leaves" or self.collect_type == "honey":
@@ -239,9 +256,17 @@ class Ant(bge.types.BL_ArmatureObject):
                     else:
                         self.destination = self.find_nearest(['Storage', 'Den'])
                             
-                    self.target = self.destination.worldPosition
+                    self.target = self.destination.worldPosition.copy()
                     
-                
+#        else:
+#            if self.carrying is not None:
+#                # return with resource
+#                if (self.worldPosition - self.destination.worldPosition).length < 1.5:
+#                    print("turning in resource")
+#                    self.carrying = None
+#                    
+#                    if self.collect:
+#                        self.target = self.collect.worldPosition.copy()
         
         
         # other stuff        
