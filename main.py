@@ -55,8 +55,8 @@ def spawn_resource(tiles, min_amount, max_amount):
     for i in range(0, random.randint(min_amount, max_amount)):
         tile = Vector(( random.randint(-128, 128), random.randint(-128, 128) ))
         
-        # leave a clearing in the center of the map
-        if tile.length > 14:
+        # leave a clearing in the center of the map, but offset
+        if (tile - Vector((0,-6))).length > 14:
             d = spawn_object(cont, "Large_clearance_detector", tile.to_3d())
             Detector(d, random.choice(tiles), i)
 
@@ -113,6 +113,7 @@ def scatter_resources(cont):
         if "Large_clearance_detector" not in bge.logic.getCurrentScene().objects:
             bge.logic.sendMessage("loaded")
         
+
     
 def spawn_queen(cont):
     own = cont.owner
@@ -125,11 +126,19 @@ def spawn_queen(cont):
     
 def spawn_worker(cont):
     own = cont.owner
-    worker = bge.logic.getCurrentScene().addObject("Ant")
+    worker = Ant(bge.logic.getCurrentScene().addObject("Ant"))
+    worker.target = own.worldPosition + Vector((0, -3, 0))
     
 def spawn_den(cont):
     own = cont.owner
     den = bge.logic.getCurrentScene().addObject("Plane.002", own)
+    
+    ground, hitpoint, normal = own.rayCast(own.worldPosition + Vector((0,0, -10)), own.worldPosition + Vector((0, 0, 10)), 30, "Ground", 1, 1)
+    if hitpoint:
+        den.worldPosition = hitpoint
+        den.alignAxisToVect(normal, 2)
+            
+    den.localOrientation.rotate(Euler((0, 0, random.random() * 360)))
         
 
 def initialize(cont):
@@ -142,10 +151,16 @@ def initialize(cont):
         bge.logic.globalDict["food"] = 50
         bge.logic.globalDict["material"] = 50
         bge.logic.globalDict["science"] = 0
+        bge.logic.globalDict["pop"] = len(Ant.antlist)
         
-        bge.logic.globalDict["max_food"] = 100
-        bge.logic.globalDict["max_material"] = 100
+        bge.logic.globalDict["foodworkers"] = 0
+        bge.logic.globalDict["materialworkers"] = 0
+        bge.logic.globalDict["scienceworkers"] = 0
+        
+        bge.logic.globalDict["max_food"] = 50
+        bge.logic.globalDict["max_material"] = 50
         bge.logic.globalDict["max_science"] = 100
+        bge.logic.globalDict["max_pop"] = 0
         
         bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
         bge.logic.globalDict["day"] = 0
@@ -159,8 +174,7 @@ def initialize(cont):
         
         #spawn_queen(cont)
         
-        for i in range(10):
-            spawn_worker(cont)
+        spawn_worker(cont)
         
         spawn_den(cont)
     

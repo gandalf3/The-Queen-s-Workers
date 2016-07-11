@@ -74,7 +74,7 @@ def box_selection(cont):
 def  select_inside(a, b):
     cont = logic.getCurrentController()
     shift = cont.sensors["Keyboard"]
-
+    
     p1 = Vector((a.x, a.y))
     p2 = Vector((b.x, a.y))
     p3 = Vector((b.x, b.y))
@@ -85,16 +85,19 @@ def  select_inside(a, b):
 
     for obj in scene.objects:
         if "ant" in obj:
-            print("found an ant")
             
-            # remove existing selection unless shift is held
-            if not shift.positive:
-                if obj.get("selected", False):
-                    obj["selected"] = False
-            
-            if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
-                print("selected", obj)
-                obj["selected"] = True
+            # if both points are in the same place, deselect everything
+            if a == b:
+                obj["selected"] = False
+            else:
+                # remove existing selection unless shift is held
+                if not shift.positive:
+                    if obj.get("selected", False):
+                        obj["selected"] = False
+                
+                if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
+                    print("selected", obj)
+                    obj["selected"] = True
             
             
 
