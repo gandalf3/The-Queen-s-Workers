@@ -83,22 +83,26 @@ class Ant(bge.types.BL_ArmatureObject):
         
     def separate(self):
         
-        next_ant = Ant.antlist[self.currently_considering]
+        if Ant.antlist[self.currently_considering] != self:
+            next_ant = Ant.antlist[self.currently_considering]
+        else:
+            self.currently_considering = (self.currently_considering + 1) % len(Ant.antlist)
+            next_ant = Ant.antlist[self.currently_considering]
         
-        #print(self.getVectTo(next_ant))
-        dist = 230
-
+        dist, vect, lvect = self.getVectTo(next_ant)
+        
         if dist < self.nearest_ant:
             self.nearest_ant = dist
         
-        if self.nearest_ant < 2 and vect:
-            bge.render.drawLine(self.worldPosition, self.worldPosition - vect, (.3, 0, 1))
+        self.currently_considering = (self.currently_considering + 1) % len(Ant.antlist)
+        
+        if self.nearest_ant < .5 and vect:
+            bge.render.drawLine(self.worldPosition, self.worldPosition + vect*10 , (.3, 0, 1))
             self.nearest_ant = 100
-            return vect
+            return -vect
         else:
             return Vector((0,0,0))
         
-        self.currently_considering += 1
         
     
     def move(self):
