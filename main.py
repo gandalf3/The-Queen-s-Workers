@@ -129,7 +129,7 @@ def spawn_worker(cont):
     
 def spawn_den(cont):
     own = cont.owner
-    den = bge.logic.getCurrentScene().addObject("Plane.002")
+    den = bge.logic.getCurrentScene().addObject("Plane.002", own)
         
 
 def initialize(cont):

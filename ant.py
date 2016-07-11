@@ -32,7 +32,7 @@ class Ant(bge.types.BL_ArmatureObject):
         self.target = Vector((0, 0, 0))
         
         self.vision_distance = 5
-        self.stopping_margin = 1.3
+        self.stopping_margin = 1.5
         
         self.acceleration = .005
         self.max_speed = .1
