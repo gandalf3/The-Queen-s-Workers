@@ -100,20 +100,21 @@ def  select_inside(a, b):
                     obj["selected"] = True
             
             
+def gui_space(p):
+    p = Vector(p).copy()
+    
+    p.x = p.x*16 - 8
+    p.y = p.y*9 - 4.5
+    
+    p.y *= -1
+    
+    return p
 
 def draw_box(a, b):
     color = (1,1,1)
     
-    a = a.copy()
-    b = b.copy()
-    
-    a.x = a.x*16 - 8
-    b.x = b.x*16 - 8
-    a.y = a.y*9 - 4.5
-    b.y = b.y*9 - 4.5
-    
-    a.y *= -1
-    b.y *= -1
+    a = gui_space(a)
+    b = gui_space(b)
 
     p1 = Vector((a.x, a.y)).to_3d()
     p2 = Vector((b.x, a.y)).to_3d()
