@@ -13,6 +13,8 @@ class Unit(bge.types.KX_GameObject):
 
 class Ant(bge.types.BL_ArmatureObject):
     
+    antlist = []
+    
     def __init__(self, own):
         
         # Tasks
@@ -45,6 +47,8 @@ class Ant(bge.types.BL_ArmatureObject):
         self.target_direction = Vector((0, -1, 0))
         self.direction = self.getAxisVect((0,-1,0))
         
+        self.currently_considering = 0
+        Ant.antlist.append(self)
         
         
     def towards_target(self):
@@ -69,9 +73,9 @@ class Ant(bge.types.BL_ArmatureObject):
         
         obstacle = self.rayCastTo(ahead, self.vision_distance, "obstacle")
         if obstacle:
+            #print("watch out", obstacle)
             dist, go_around, l = self.getVectTo(obstacle)
             go_around.z = 0
-            
             return -go_around
         
         else:
@@ -79,25 +83,28 @@ class Ant(bge.types.BL_ArmatureObject):
         
     def separate(self):
         
-        for ant in self.near_sens.hitObjectList:
-            if ant not in self.children:
-                vect = (self.worldPosition - ant.worldPosition)
-                if vect.length < self.nearest_ant:
-                    self.nearest_ant = vect.length
+        next_ant = Ant.antlist[self.currently_considering]
+        
+        #print(self.getVectTo(next_ant))
+        dist = 230
+
+        if dist < self.nearest_ant:
+            self.nearest_ant = dist
         
         if self.nearest_ant < 2 and vect:
-            bge.render.drawLine(self.worldPosition, self.worldPosition - vect, (1, 0, 0))
+            bge.render.drawLine(self.worldPosition, self.worldPosition - vect, (.3, 0, 1))
             self.nearest_ant = 100
             return vect
         else:
             return Vector((0,0,0))
+        
+        self.currently_considering += 1
         
     
     def move(self):
         if not self.isPlayingAction():
             self.playAction("antwalking", 0, 12, 0, 0, 0, bge.logic.KX_ACTION_MODE_LOOP)
         
-        print(self.getActionFrame())
         self.setActionFrame((self.getActionFrame()+self.direction.length)%12)
         
         if not self.direction.length < 0.000001:
@@ -109,7 +116,6 @@ class Ant(bge.types.BL_ArmatureObject):
         # order taking
         if self["selected"]:
             if self.sensors["Click"].positive and self.sensors["CanGo"].positive:
-                print("going")
                 self.target = self.sensors["CanGo"].hitPosition
         
         # decision making

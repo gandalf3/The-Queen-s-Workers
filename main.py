@@ -126,6 +126,10 @@ def spawn_queen(cont):
 def spawn_worker(cont):
     own = cont.owner
     worker = bge.logic.getCurrentScene().addObject("Ant")
+    
+def spawn_den(cont):
+    own = cont.owner
+    den = bge.logic.getCurrentScene().addObject("Plane.002")
         
 
 def initialize(cont):
@@ -153,7 +157,12 @@ def initialize(cont):
         
         #scatter_resources(cont)
         
-        spawn_queen(cont)
+        #spawn_queen(cont)
+        
+        for i in range(10):
+            spawn_worker(cont)
+        
+        spawn_den(cont)
     
 def increment_day():
     day = bge.logic.getRealTime() - bge.logic.globalDict["day_offset"]

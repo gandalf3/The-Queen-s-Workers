@@ -91,25 +91,18 @@ def  select_inside(a, b):
             if not shift.positive:
                 if obj.get("selected", False):
                     obj["selected"] = None
-                    highlight(obj, False)
+                    highlight(obj)
             
             if geometry.intersect_point_quad_2d(obj.worldPosition.xy, p1, p2, p3, p4):
                 print("selected", obj)
                 obj["selected"] = True
-                highlight(obj, True)
+                highlight(obj)
             
 def highlight(obj, enable=True):
     for o in obj.children:
         for mesh in o.meshes:
             for mat in mesh.materials:
-                print("asdf")
-                if enable:
-                    print(mat.emit)
-                    mat.emit = 100
-                    print(mat.emit)
-                else:
-                    print("disabled")
-                    mat.emit = 0
+                print(mat.emit)
             
             
 
