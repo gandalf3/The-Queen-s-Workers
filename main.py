@@ -194,5 +194,22 @@ def increment_day():
         bge.logic.sendMessage("season_update", "summer")
         bge.logic.globalDict["season"] = "Summer"
     elif yday < int(365/4):
+        
+        bge.logic.globalDict["primary_food"] = random.choice(["honey", "leaves"])
+        
+        if bge.logic.globalDict["primary_food"] == "honey":
+            spawn_resource(honey, 20, 30)
+            spawn_resource(leaves, 2, 5)
+        else:
+            spawn_resource(leaves, 20, 30)
+            spawn_resource(honey, 2, 5)
+            
+        spawn_resource(clay, 50, 80)
+        spawn_resource(roots, 20, 30)
+        spawn_resource(fossils, 2, 7)
+        
+        spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
+        
         bge.logic.sendMessage("season_update", "spring")
         bge.logic.globalDict["season"] = "Spring"
+        
