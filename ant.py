@@ -77,11 +77,28 @@ class Ant(bge.types.BL_ArmatureObject):
 
                 self.ticks_since_last_meal = 0
             else:
-                print("NOTIFICATION: hungry")
+                # go without food
+                self.ticks_since_last_meal = 0
+                if random.random() < .3:
+                    bge.logic.sendMessage("notify", "An ant starved!")
+                    self.die()
+                else:
+                    bge.logic.sendMessage("notify", "An ant is hungry")
 
         self.ticks_since_last_meal += 1
         
+    def die(self):
+        if self.carrying is not None:
+            self.carrying.endObject()
+            
+        for o in self.children:
+            o.endObject()
+            
+        Ant.antlist.remove(self)
         
+        bge.logic.globalDict["pop"] = len(Ant.antlist)
+        bge.logic.sendMessage("GUI")
+        self.endObject()
         
     def towards_target(self):
         dist, vect, lvect = self.getVectTo(self.target.to_3d())
@@ -120,6 +137,10 @@ class Ant(bge.types.BL_ArmatureObject):
         
     def separate(self):
         
+        # in case of death
+        if len(Ant.antlist) <= self.currently_considering:
+            self.currently_considering = 0
+            
         if Ant.antlist[self.currently_considering] != self:
             next_ant = Ant.antlist[self.currently_considering]
         else:
@@ -263,15 +284,15 @@ class Ant(bge.types.BL_ArmatureObject):
                             
                     self.target = self.destination.worldPosition.copy()
                     
-#        else:
-#            if self.carrying is not None:
-#                # return with resource
-#                if (self.worldPosition - self.destination.worldPosition).length < 1.5:
-#                    print("turning in resource")
-#                    self.carrying = None
-#                    
-#                    if self.collect:
-#                        self.target = self.collect.worldPosition.copy()
+        else:
+            if self.carrying is not None:
+                # return with resource
+                if (self.worldPosition - self.destination.worldPosition).length < 1.5:
+                    print("turning in resource")
+                    self.carrying = None
+                    
+                    if self.collect:
+                        self.target = self.collect.worldPosition.copy()
         
         
         # other stuff        

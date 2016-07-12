@@ -228,9 +228,7 @@ def increment_day():
             
             spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
             
-    if bge.logic.globalDict["food"] < 10:
-        bge.logic.sendMessage("notify", "Food is running low")
-        
+
     if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
         if bge.logic.globalDict["havewon"] != True:
             bge.logic.globalDict["havewon"] = True
