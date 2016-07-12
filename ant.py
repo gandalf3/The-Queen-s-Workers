@@ -70,7 +70,6 @@ class Ant(bge.types.BL_ArmatureObject):
     
     def eat(self):
         if self.ticks_since_last_meal > 900:
-            print(bge.logic.globalDict["food"])
             if bge.logic.globalDict["food"] > 0:
                 bge.logic.globalDict["food"] -= 1
                 bge.logic.sendMessage("GUI")
@@ -245,7 +244,7 @@ class Ant(bge.types.BL_ArmatureObject):
                     self.target = Vector((0,-3,0))
                     self.return_home_timer = None
                 elif self.return_home_timer is None:
-                    self.return_home_timer = 60 * 10             
+                    self.return_home_timer = 60 * 10
         
         # is there something to collect?
         if self.collect is not None and not self.collect.invalid:
