@@ -220,6 +220,11 @@ class Ant(bge.types.BL_ArmatureObject):
                         else:
                             if self.collect is not None:
                                 self.collect = None
+                            
+                                if self.carrying is not None:
+                                    self.carrying.endObject()
+                                    self.carrying = None
+                                    
                                 bge.logic.globalDict[self.collect_category + "workers"] -= 1
                                 bge.logic.sendMessage("GUI")
                                 
@@ -274,25 +279,29 @@ class Ant(bge.types.BL_ArmatureObject):
                         self.collect = None
                         bge.logic.globalDict[self.collect_category + "workers"] -= 1
                     
-                    # determine nearest dropoff point
-                    if self.collect_type == "leaves" or self.collect_type == "honey":
-                        self.destination = self.find_nearest(['Honey Den', 'Farm'])
-                        if self.destination is None:
-                            self.destination = self.find_nearest(['Storage', 'Den'])
+                    # determine nearest possible dropoff point
+                    if self.collect_type == "leaf":
+                        self.destination = self.find_nearest(['Farm'])
+                    elif self.collect_type == "honey":
+                        self.destination = self.find_nearest(['Honey Den'])    
                     else:
                         self.destination = self.find_nearest(['Storage', 'Den'])
-                            
+                        
+                    if self.destination is None:
+                        self.destination = self.find_nearest(['Storage', 'Den'])
+
+                    if self.destination is None:
+                        bge.logic.sendMessage("notify", "Nowhere to store resources!!")
+                    
                     self.target = self.destination.worldPosition.copy()
                     
         else:
+            # if resource is gone but we still are carrying some around
             if self.carrying is not None:
                 # return with resource
                 if (self.worldPosition - self.destination.worldPosition).length < 1.5:
                     print("turning in resource")
                     self.carrying = None
-                    
-                    if self.collect:
-                        self.target = self.collect.worldPosition.copy()
         
         
         # other stuff        

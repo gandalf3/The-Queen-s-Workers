@@ -32,18 +32,18 @@ def honeyden(cont):
     own = cont.owner
     sens = cont.sensors[0]
     
-    if random.random() < own["efficiency"]*.04:
+    if random.random() < own["efficiency"]*.08:
         if own["stored"] > 1/own["efficiency"]:
             own["stored"] -= 1/own["efficiency"]
 
-            increase_resource(own, food)
+            increase_resource(own, "food")
 
 def farm(cont):
     own = cont.owner
     sens = cont.sensors[0]
     
-    if random.random() < own["efficiency"]*.05:
+    if random.random() < own["efficiency"]*.09:
         if own["stored"] > 1/own["efficiency"]:
             own["stored"] -= 1/own["efficiency"]
 
-            increase_resource(own, food)
+            increase_resource(own, "food")
