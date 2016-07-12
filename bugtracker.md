@@ -32,3 +32,5 @@ BUG: lack of visual feedback/any kind of indication that food buildings are oper
 BUG: lack of visual feedback when telling ants to go somewhere or collect something (the player has to wait to see if the ants will start collecting what they clicked on, or just walk up to it and stop)
 
 BUG: no indicators for explaining how the game works (e.g. what buildings do what, how they work, etc.)
+
+BUG? ending suzanne doesn't go away, making continuing play nearly impossible (maybe the hole should slowly drop back below the ground after the player chooses to continue, and the suzanne can fly about, perhaps following the player?)
