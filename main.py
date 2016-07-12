@@ -150,7 +150,7 @@ def initialize(cont):
         
         bge.logic.globalDict["food"] = 50
         bge.logic.globalDict["material"] = 50
-        bge.logic.globalDict["science"] = 0
+        bge.logic.globalDict["science"] = 100
         bge.logic.globalDict["pop"] = len(Ant.antlist)
         
         bge.logic.globalDict["foodworkers"] = 0
@@ -165,6 +165,8 @@ def initialize(cont):
         bge.logic.globalDict["day_offset"] = bge.logic.getRealTime()
         bge.logic.globalDict["day"] = 0
         bge.logic.globalDict["season"] = "Spring"
+        
+        bge.logic.globalDict["havewon"] = False
         
         # Refresh resourcecounts
         bge.logic.sendMessage("GUI")
@@ -185,19 +187,28 @@ def increment_day():
 
     yday = int(day % 365)
     
-    
     if yday >= int(365/4 * 3):
-        bge.logic.sendMessage("season_update", "winter")
-        bge.logic.globalDict["season"] = "Winter"
+        if bge.logic.globalDict["season"] != "Fall":
+            #bge.logic.sendMessage("season_update", "winter")
+            bge.logic.sendMessage("notify", "Winter is coming")
+            bge.logic.globalDict["season"] = "Winter"
+        
     elif yday >= int(365/4 * 2):
-        bge.logic.sendMessage("season_update", "fall")
-        bge.logic.globalDict["season"] = "Fall"
+        if bge.logic.globalDict["season"] != "Fall":
+            #bge.logic.sendMessage("season_update", "fall")
+            bge.logic.sendMessage("notify", "Fall is coming")
+            bge.logic.globalDict["season"] = "Fall"
+        
     elif yday >= int(365/4):
-        bge.logic.sendMessage("season_update", "summer")
-        bge.logic.globalDict["season"] = "Summer"
+        if bge.logic.globalDict["season"] != "Summer":
+            #bge.logic.sendMessage("season_update", "summer")
+            bge.logic.sendMessage("notify", "Summer is coming")
+            bge.logic.globalDict["season"] = "Summer"
+            
     elif yday < int(365/4):
         if bge.logic.globalDict["season"] != "Spring":
-            bge.logic.sendMessage("season_update", "spring")
+            #bge.logic.sendMessage("season_update", "spring")
+            bge.logic.sendMessage("notify", "Happy new year! Spring is coming")
             bge.logic.globalDict["season"] = "Spring"
         
         
@@ -216,5 +227,14 @@ def increment_day():
             spawn_resource(fossils, 2, 7)
             
             spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
+            
+    if bge.logic.globalDict["food"] < 10:
+        bge.logic.sendMessage("notify", "Food is running low")
         
+    if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
+        if bge.logic.globalDict["havewon"] != True:
+            bge.logic.globalDict["havewon"] = True
+           # bge.logic.getCurrentScene().addObject("SuzJet")
+            bge.logic.addScene("win overlay")
+            bge.logic.sendMessage("youwin")
         

@@ -175,33 +175,34 @@ class Ant(bge.types.BL_ArmatureObject):
         return nearest_dest
         
     def main(self):
+        scene = bge.logic.getCurrentScene()
         
         # order taking
-        
-        if self["selected"]:
-            if self.sensors["Click"].positive:
-                if self.sensors["CanGo"].positive:
-                    
-                    obj, hitPoint, normal = self.rayCast(self.sensors["CanGo"].rayTarget, self.sensors["CanGo"].raySource, 300)
-
-                    if "points" in obj:
-                        print("You clicked a Resource!")
-                        self.collect = obj
-                        self.target = self.collect.worldPosition.copy()
+        if not scene.objects["Placement_Empty"]['BuildModeActive']:
+            if self["selected"]:
+                if self.sensors["Click"].positive:
+                    if self.sensors["CanGo"].positive:
                         
-                        self.collect_type = self.collect["type"]
-                        self.collect_category = self.collect["category"]
+                        obj, hitPoint, normal = self.rayCast(self.sensors["CanGo"].rayTarget, self.sensors["CanGo"].raySource, 300)
 
-                        bge.logic.globalDict[self.collect_category + "workers"] += 1
-                        bge.logic.sendMessage("GUI")
-                        
-                    else:
-                        if self.collect is not None:
-                            self.collect = None
-                            bge.logic.globalDict[self.collect_category + "workers"] -= 1
+                        if "points" in obj:
+                            print("You clicked a Resource!")
+                            self.collect = obj
+                            self.target = self.collect.worldPosition.copy()
+                            
+                            self.collect_type = self.collect["type"]
+                            self.collect_category = self.collect["category"]
+
+                            bge.logic.globalDict[self.collect_category + "workers"] += 1
                             bge.logic.sendMessage("GUI")
                             
-                        self.target = self.sensors["CanGo"].hitPosition
+                        else:
+                            if self.collect is not None:
+                                self.collect = None
+                                bge.logic.globalDict[self.collect_category + "workers"] -= 1
+                                bge.logic.sendMessage("GUI")
+                                
+                            self.target = self.sensors["CanGo"].hitPosition
                     
         
         # decision making
@@ -239,7 +240,11 @@ class Ant(bge.types.BL_ArmatureObject):
                     if self.collect["points"] > 1:
                         self.collect["points"] -= 1
                         
-                        self.carrying = bge.logic.getCurrentScene().addObject(self.collect_type + "fragment", self)
+                        if self.collect_type == "honey":
+                            print("replacing mesh")
+                            self.replaceMesh("Cube.001")
+                        self.carrying = scene.addObject(self.collect_type + "fragment", self)
+                        
                     else:
                         print("resource run out")
                         
