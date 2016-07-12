@@ -53,19 +53,19 @@ def zoom_to_altitude(zoom_level):
 target_altitude = zoom_to_altitude(zoom_level)
 
 def zoom(cont):
-    global target_altitude
+    global zoom_level, target_altitude
     own = cont.owner
-    zoom_level = own["zoom_level"]
+    #zoom_level = own["zoom_level"]
     
     mouse_w_up = own.sensors['MouseWUp']
     mouse_w_down = own.sensors['MouseWDown']
     
     if mouse_w_up.positive:
-        own["zoom_level"] = clamp(zoom_level-1, 0, 7)
+        zoom_level = clamp(zoom_level-1, 0, 7)
         target_altitude = zoom_to_altitude(zoom_level)
         
     elif mouse_w_down.positive:
-        own["zoom_level"] = clamp(zoom_level+1, 0, 7)
+        zoom_level = clamp(zoom_level+1, 0, 7)
         target_altitude = zoom_to_altitude(zoom_level)
         
     own.worldPosition.z = lerp(own.worldPosition.z, target_altitude, .1)
