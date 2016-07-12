@@ -8,8 +8,9 @@ def storage(cont):
     sens = cont.sensors[0]
     
     if sens.positive:
-        bge.logic.globalDict["max_food"] += own.children[0]["food_storage"]
-        bge.logic.globalDict["max_material"] += own.children[0]["material_storage"]
+        bge.logic.globalDict["max_food"] += own.children[0]["foodstorage"]
+        bge.logic.globalDict["max_material"] += own.children[0]["materialstorage"]
+        bge.logic.sendMessage("GUI")
         
 def den(cont):
     own = cont.owner
