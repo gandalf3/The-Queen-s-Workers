@@ -66,7 +66,7 @@ class Ant(bge.types.BL_ArmatureObject):
         self.currently_considering = 0
         
         self.ticks_since_last_meal = random.randint(0, 600)
-        
+        self.return_home_timer = None
     
     def eat(self):
         if self.ticks_since_last_meal > 900:
@@ -233,6 +233,20 @@ class Ant(bge.types.BL_ArmatureObject):
         
         # decision making
         
+        if self.return_home_timer is not None:
+            #counting away the ticks
+            self.return_home_timer -= 1
+        
+        #have we arrived (away from home)?
+        if (Vector((0,-3,0)) - self.target).length > 1.5:
+            
+            if (self.worldPosition - self.target).length < 1.5:
+                if self.return_home_timer is not None and self.return_home_timer < 1:
+                    self.target = Vector((0,-3,0))
+                    self.return_home_timer = None
+                elif self.return_home_timer is None:
+                    self.return_home_timer = 60 * 10             
+        
         # is there something to collect?
         if self.collect is not None and not self.collect.invalid:
             
@@ -278,6 +292,8 @@ class Ant(bge.types.BL_ArmatureObject):
                         self.collect.endObject()
                         self.collect = None
                         bge.logic.globalDict[self.collect_category + "workers"] -= 1
+                        #send him back
+                        self.target = Vector((0, 0, 0))
                     
                     # determine nearest possible dropoff point
                     if self.collect_type == "leaf":
