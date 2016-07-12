@@ -1,5 +1,5 @@
 import bge
-from mathutils import Vector
+from mathutils import Vector, noise
 from math import sqrt
 from utils import clamp, lerp
 
@@ -9,8 +9,6 @@ from utils import clamp, lerp
 # use vector from center to cursor to control pan direction
 # investigate using "pressure" to control pan speed in some way; else use timer to slowly speed up
 # adjust pan speed based on resolution as well
-
-shake = 0
 
 # number of steps of zoom
 zoom_steps = 7
@@ -55,18 +53,19 @@ def zoom_to_altitude(zoom_level):
 target_altitude = zoom_to_altitude(zoom_level)
 
 def zoom(cont):
-    global zoom_level, target_altitude
+    global target_altitude
     own = cont.owner
+    zoom_level = own["zoom_level"]
     
     mouse_w_up = own.sensors['MouseWUp']
     mouse_w_down = own.sensors['MouseWDown']
     
     if mouse_w_up.positive:
-        zoom_level = clamp(zoom_level-1, 0, 7)
+        own["zoom_level"] = clamp(zoom_level-1, 0, 7)
         target_altitude = zoom_to_altitude(zoom_level)
         
     elif mouse_w_down.positive:
-        zoom_level = clamp(zoom_level+1, 0, 7)
+        own["zoom_level"] = clamp(zoom_level+1, 0, 7)
         target_altitude = zoom_to_altitude(zoom_level)
         
     own.worldPosition.z = lerp(own.worldPosition.z, target_altitude, .1)
@@ -120,5 +119,17 @@ def pan(cont):
 def auto_pan(cont):
     own = cont.owner
     
-    own.worldPosition = own.worldPosition.lerp((own["target_x"], own["target_y"], own["target_z"]), .1)
+    
+    target = bge.logic.getCurrentScene().objects["end_cam_placeholder"]
+    
+    own.worldPosition = own.worldPosition.lerp(target.worldPosition, own["pan_urgency"])
+    own.worldOrientation = own.worldOrientation.lerp(target.worldOrientation, own["pan_urgency"])
+    
+def shake(cont):
+    own = cont.owner
+    
+    t = bge.logic.getRealTime()
+    n = noise.random_unit_vector()
+
+    own.worldPosition = own.worldPosition + n*own["shake_amount"]
     

@@ -150,7 +150,7 @@ def initialize(cont):
         
         bge.logic.globalDict["food"] = 50
         bge.logic.globalDict["material"] = 50
-        bge.logic.globalDict["science"] = 100
+        bge.logic.globalDict["science"] = 0
         bge.logic.globalDict["pop"] = len(Ant.antlist)
         
         bge.logic.globalDict["foodworkers"] = 0
@@ -234,7 +234,7 @@ def increment_day():
     if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
         if bge.logic.globalDict["havewon"] != True:
             bge.logic.globalDict["havewon"] = True
-           # bge.logic.getCurrentScene().addObject("SuzJet")
-            bge.logic.addScene("win overlay")
+            
             bge.logic.sendMessage("youwin")
+            bge.logic.getCurrentScene().addObject("ending_control")
         
