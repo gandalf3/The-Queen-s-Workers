@@ -11,10 +11,10 @@ Vector based camera movement DONE
 BUG: ants don't become honey ants
 (tried using replaceMesh, but that didn't work. Looks like we'll have to kill main ant and spawn a honey ant in its place)
 
-BUG: ants don't starve properly
+BUG: ants don't starve properly FIXED
 
-BUG: ants carrying part of a resource when it gets used up become lost
+BUG: ants carrying part of a resource when it gets used up become lost FIXED
 
-BUG: ants don't always go to the special food buildings
+BUG: ants don't always go to the special food buildings FIXED
 
 BUG: ants react to clicks while in build mode
