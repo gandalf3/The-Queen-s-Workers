@@ -19,14 +19,25 @@ min_zoom = 40
 # initial zoom level
 zoom_level = 2
 
+
+
 # inertia settings
+
 acceleration = .01
-max_speed = .07
-damping = .93
+
+# speed at min_zoom
+max_speed = 2.5
+
+# speed at max_zoom
+min_speed = .3
+
+damping = .94
+
 edge_time = 0
 # time needed to reach full pan speed
-acceleration_time = 60 # in logic ticks
+acceleration_time = 30 # in logic ticks
 
+pan_speed = .03
 
 win_x = bge.render.getWindowWidth()
 win_y = bge.render.getWindowHeight()
@@ -45,8 +56,10 @@ bge.render.setMousePosition(int(win_x/2), int(win_y/2))
 momentum = Vector((0,0))
 
 def zoom_to_altitude(zoom_level):
-    global max_speed
-    #max_speed = max(zoom_level/max_zoom, .1) * .05
+    global pan_speed
+    own = bge.logic.getCurrentController().owner
+    
+    pan_speed = ((own.worldPosition.z-max_zoom)/(min_zoom-max_zoom)*(max_speed-min_speed))+min_speed
     
     return pow(zoom_level/zoom_steps * sqrt(min_zoom-max_zoom), 2) + max_zoom
 
@@ -71,42 +84,38 @@ def zoom(cont):
     own.worldPosition.z = lerp(own.worldPosition.z, target_altitude, .1)
     
     
-def pan_speed(edge_time):
-    return min(pow(edge_time/30, 2), 1)
+def get_pan_speed(edge_time):
+    return min(pow(edge_time/30, 2), 1) * pan_speed
 
 def pan(cont):
     global edge_time, momentum
     own = cont.owner
 
     #mouse_sens = own.sensors['Mouse']
-    #mouse_pos = mouse_sens.position
+    #mouse = Vector(mouse_sens.position)
     mouse = Vector(bge.logic.mouse.position)
-    
-    #mouse_x = mouse_pos[0]
-    #mouse_y = mouse_pos[1]
-    
     
     contact = False
     
-    if (mouse.x >= 1):
+    if (mouse.x >= .95):
         contact = True
         edge_time += 1
         
-    elif (mouse.x <= 0):
+    elif (mouse.x <= .05):
         contact = True
         edge_time += 1
     
         
-    if (mouse.y >= 1):
+    if (mouse.y >= .95):
         contact = True
         edge_time += 1
         
-    elif (mouse.y <= 0):
-        contact = True
+    elif (mouse.y <= .05):
         edge_time += 1
+        contact = True
         
     if contact:
-        target_momentum = (mouse - Vector((.5,.5))) * pan_speed(edge_time)
+        target_momentum = (mouse - Vector((.5,.5))) * get_pan_speed(edge_time)
         target_momentum.y *= -1
         
         momentum = momentum.lerp(target_momentum, .1)

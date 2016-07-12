@@ -23,7 +23,7 @@ BUG: ants can still sometimes leave their carried stuff in mid-air in some cases
 
 BUG: worker counters just become plain wrong over time
 
-BUG: camera control doesn't work in standalone player, reports of it being hard to control
+FIXED: camera control doesn't work in standalone player, reports of it being hard to control
 
 BUG: ants just stop when the resource they were collecting runs out. Can make ants hard to find (need to determine best way to solve this; add 'summon idle ants' button to call them back to base? make them return automatically?)
 
