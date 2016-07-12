@@ -123,7 +123,9 @@ def pan(cont):
         edge_time = 0
     
     momentum *= damping
-    own.worldPosition.xy += momentum.xy
+    
+    own.worldPosition.x = clamp(own.worldPosition.x + momentum.x, -128, 128)
+    own.worldPosition.y = clamp(own.worldPosition.y + momentum.y, -158, 108)
     
 def auto_pan(cont):
     own = cont.owner
