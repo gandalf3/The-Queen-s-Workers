@@ -131,7 +131,7 @@ def spawn_worker(cont):
     
 def spawn_den(cont):
     own = cont.owner
-    den = bge.logic.getCurrentScene().addObject("Plane.002", own)
+    den = bge.logic.getCurrentScene().addObject("Den", own)
     
     ground, hitpoint, normal = own.rayCast(own.worldPosition + Vector((0,0, -10)), own.worldPosition + Vector((0, 0, 10)), 30, "Ground", 1, 1)
     if hitpoint:
