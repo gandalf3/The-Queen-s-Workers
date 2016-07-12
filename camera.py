@@ -23,7 +23,7 @@ zoom_level = 2
 
 # inertia settings
 acceleration = .01
-max_speed = .1
+max_speed = .07
 damping = .93
 edge_time = 0
 # time needed to reach full pan speed
