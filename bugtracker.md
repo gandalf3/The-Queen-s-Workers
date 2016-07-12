@@ -33,4 +33,4 @@ BUG: lack of visual feedback when telling ants to go somewhere or collect someth
 
 BUG: no indicators for explaining how the game works (e.g. what buildings do what, how they work, etc.)
 
-BUG? ending suzanne doesn't go away, making continuing play nearly impossible (maybe the hole should slowly drop back below the ground after the player chooses to continue, and the suzanne can fly about, perhaps following the player?)
+PARTIALLY FIXED: ending suzanne doesn't go away, making continuing play nearly impossible (maybe the hole should slowly drop back below the ground after the player chooses to continue, and the suzanne can fly about, perhaps following the player?) ----- the dirt mount JetSuz emerges from does not retract back into the earth, but JetSuz doesn't follow the player around, which would be AWESOME!!!!!
