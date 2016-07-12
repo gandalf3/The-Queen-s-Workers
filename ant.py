@@ -71,7 +71,7 @@ class Ant(bge.types.BL_ArmatureObject):
     def eat(self):
         if self.ticks_since_last_meal > 900:
             print(bge.logic.globalDict["food"])
-            if bge.logic.globalDict["food"] > 1:
+            if bge.logic.globalDict["food"] > 0:
                 bge.logic.globalDict["food"] -= 1
                 bge.logic.sendMessage("GUI")
 

@@ -126,6 +126,7 @@ def spawn_queen(cont):
 def spawn_worker(cont):
     own = cont.owner
     worker = Ant(bge.logic.getCurrentScene().addObject("Ant"))
+    worker.worldPosition.xy = own.worldPosition.xy
     bge.logic.sendMessage("GUI")
     worker.target = own.worldPosition + Vector((0, -3, 0))
     

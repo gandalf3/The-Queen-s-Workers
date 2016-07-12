@@ -21,8 +21,10 @@ def den(cont):
         
     if random.random() < .2:
         if bge.logic.globalDict["pop"] < bge.logic.globalDict["max_pop"]:
-            print(bge.logic.globalDict["pop"])
-            spawn_worker(cont)
+            if bge.logic.globalDict["food"] > 5:
+                bge.logic.globalDict["food"] -= 5
+                bge.logic.sendMessage("GUI")
+                spawn_worker(cont)
             
             
         
