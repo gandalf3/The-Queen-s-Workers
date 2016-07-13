@@ -307,7 +307,7 @@ class Ant(bge.types.BL_ArmatureObject):
             #have we arrived (away from home)?
             if (Vector((0,-3,0)) - self.target).length > 1.5:
                 if (self.worldPosition - self.target).length < 1.5:
-                    print(self.return_home_timer)
+
                     if self.return_home_timer is not None and self.return_home_timer < 1:
                         self.go_back()
                     elif self.return_home_timer is None:
