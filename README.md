@@ -16,7 +16,7 @@ Made by:
 * ARadish         concept, modeling, art, etc
 * gandalf3        game mechanics. python. (made everything work and look cool)
 * X-27            building system, other game mechanics, some prettyifiying, implemented easter egg.
-* GiantCowFilms   playtesting and the occasional patch
+* GiantCowFilms   python patching, the map mechanics, and messing stuff up
 
 ^^^ that was a big hint - you wouldn't have possibly found the buttons to activate the Easter Egg without reading this file.
 
