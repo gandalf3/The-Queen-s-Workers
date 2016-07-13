@@ -30,19 +30,27 @@ class Ant(bge.types.BL_ArmatureObject):
         
         #self.task = 
         
+        
         # modes:
-        # DO_NOTHING
-        # GOTO
-        # WORK
+        
+        # DROP: drop off self.carrying at an appropriate building
+        # GOGET: go to self.collect
+        # GOTO: go to self.target
+        # GOBACK: go to 0,0
         self.mode = "GOTO"
         
-        self.target = Vector((0, 0, 0))
+        self.idle = True
+        
+        self.target = Vector((0, 0))
 
         self.collect = None
-        self.collect_type = None
-        self.collect_type = None
+        # useful to store this in case self.collect becomes invalid due to being used up
+        self.collect_category = None
         
         self.carrying = None
+        self.carry_type = None
+        self.carry_category = None
+        
         self.destination = None
         
         self.vision_distance = 5
@@ -89,6 +97,7 @@ class Ant(bge.types.BL_ArmatureObject):
     def die(self):
         if self.carrying is not None:
             self.carrying.endObject()
+            self.carrying = None
             
         for o in self.children:
             o.endObject()
@@ -115,8 +124,7 @@ class Ant(bge.types.BL_ArmatureObject):
         return vect
     
     
-    def around_obstacles(self):
-        
+    def around_obstacles(self):        
         here = self.worldPosition
         ahead = self.worldPosition + self.direction * self.vision_distance
         
@@ -135,7 +143,6 @@ class Ant(bge.types.BL_ArmatureObject):
             return Vector((0,0,0))
         
     def separate(self):
-        
         # in case of death
         if len(Ant.antlist) <= self.currently_considering:
             self.currently_considering = 0
@@ -159,6 +166,7 @@ class Ant(bge.types.BL_ArmatureObject):
             return -vect
         else:
             return Vector((0,0,0))
+        
         
     def wander(self):
         t = bge.logic.getRealTime()
@@ -193,9 +201,93 @@ class Ant(bge.types.BL_ArmatureObject):
                         nearest_dest = dest
 
         return nearest_dest
+    
+    
+    def update_workercount(self, recount=False):
+        gd = bge.logic.globalDict
+        
+        if recount:
+            gd["foodworkers"] = 0
+            gd["materialworkers"] = 0
+            gd["scienceworkers"] = 0
+            gd["idleworkers"] = 0
+            
+            for ant in Ant.antlist:
+                if collect:
+                    gd[category + "workers"] += 1
+                else:
+                    gd["idleworkers"] += 1
+                    
+        else:
+            if self.collect:
+                gd[self.collect["category"] + "workers"] += 1
+            else:
+                gd["idleworkers"] += 1
+                    
+        bge.logic.sendMessage("GUI")
+    
+    
+    def go_to(self, coords):
+        self.target = coords.copy()
+        self.mode = "GOTO"
+        
+    
+    def go_get(self, obj):
+        if self.carrying is not None:
+            # need to drop something off first
+            self.go_drop()
+            if obj is not None:
+                self.collect = obj
+        else:
+            if obj is not None:
+                self.collect = obj
+                self.target = self.collect.worldPosition.copy()
+                self.mode = "GOGET"
+            else:
+                self.collect = None
+                self.collect_category = None
+                self.go_back()
+                
+        
+        self.update_workercount()
+        
+            
+    def go_back(self):
+        self.return_home_timer = 0
+        self.go_to(Vector((0,-3,0)))
+        
+        
+    def go_drop(self):
+        # determine nearest possible dropoff point
+        destination = None
+        if self.carry_type == "leaf":
+            destination = self.find_nearest(['Farm'])
+        elif self.carry_type == "honey":
+            destination = self.find_nearest(['Honey Den'])    
+        else:
+            destination = self.find_nearest(['Storage', 'Den'])
+        
+        # if there's no special buildings to deliver to, a generic one will do    
+        if destination is None:
+            destination = self.find_nearest(['Storage', 'Den'])
+        
+        # if *still* none we now have a real problem
+        if destination is None:
+            bge.logic.sendMessage("notify", "Nowhere to store resources!!")
+        
+        self.destination = destination
+        self.target = self.destination.worldPosition.copy()
+        self.mode = "DROP"
+        
         
     def main(self):
         scene = bge.logic.getCurrentScene()
+        
+        # check for invalid gameobject references
+        if self.collect is not None and self.collect.invalid:
+            self.collect = None
+        if self.destination is not None and self.destination.invalid:
+            self.destination = None
         
         # order taking
         if not scene.objects["Placement_Empty"]['BuildModeActive']:
@@ -204,119 +296,95 @@ class Ant(bge.types.BL_ArmatureObject):
                     if self.sensors["CanGo"].positive:
                         
                         obj, hitPoint, normal = self.rayCast(self.sensors["CanGo"].rayTarget, self.sensors["CanGo"].raySource, 300)
-
+                        
+                        # only resources have a "points" property
                         if "points" in obj:
                             print("You clicked a Resource!")
-                            self.collect = obj
-                            self.target = self.collect.worldPosition.copy()
-                            
-                            self.collect_type = self.collect["type"]
-                            self.collect_category = self.collect["category"]
+                            self.go_get(obj)
 
-                            bge.logic.globalDict[self.collect_category + "workers"] += 1
-                            bge.logic.sendMessage("GUI")
-                            
                         else:
-                            if self.collect is not None:
-                                self.collect = None
-                            
-                                if self.carrying is not None:
-                                    self.carrying.endObject()
-                                    self.carrying = None
-                                    
-                                bge.logic.globalDict[self.collect_category + "workers"] -= 1
-                                bge.logic.sendMessage("GUI")
-                                
-                            self.target = self.sensors["CanGo"].hitPosition
+                            self.go_to(self.sensors["CanGo"].hitPosition)
                     
         
         # decision making
         
-        if self.return_home_timer is not None:
-            #counting away the ticks
-            self.return_home_timer -= 1
-        
-        #have we arrived (away from home)?
-        if (Vector((0,-3,0)) - self.target).length > 1.5:
+        if self.mode == "GOTO":
+            if self.return_home_timer is not None:
+                #counting away the ticks
+                self.return_home_timer -= 1
             
-            if (self.worldPosition - self.target).length < 1.5:
-                if self.return_home_timer is not None and self.return_home_timer < 1:
-                    self.target = Vector((0,-3,0))
-                    self.return_home_timer = None
-                elif self.return_home_timer is None:
-                    self.return_home_timer = 60 * 10
+                #have we arrived (away from home)?
+                if (Vector((0,-3,0)) - self.target).length > 1.5:
+                    
+                    if (self.worldPosition - self.target).length < 1.5:
+                        if self.return_home_timer is not None and self.return_home_timer < 1:
+                            self.target = Vector((0,-3,0))
+                            self.return_home_timer = None
+                        elif self.return_home_timer is None:
+                            self.return_home_timer = 60 * 10
+                    
         
-        # is there something to collect?
-        if self.collect is not None and not self.collect.invalid:
-            
-            if self.carrying is not None:
-                
-                self.carrying.worldPosition = self.worldPosition
-                
-                # return with resource
-                if (self.worldPosition - self.destination.worldPosition).length < 1.5:
-                    print("turning in resource")
-                    
-                    if self.collect_category == "food":
-                        if "stored" in self.destination:
-                            self.destination['stored'] += 1
-                        else:
-                            increase_resource(self, "food")
-                    else:
-                        increase_resource(self, self.collect_category)
-
-                    self.carrying.endObject()
-                    self.carrying = None
-                    
-                    if self.collect:
-                        self.target = self.collect.worldPosition.copy()
-
-            else: 
+        elif self.mode == "GOGET":
+            # is there still something to collect?
+            if self.collect is not None:
                 # go get resource
                 if (self.worldPosition - self.collect.worldPosition).length < 1.5:
                     print("picking up resource")
                         
-                    if self.collect["points"] > 1:
+                    if self.collect["points"] > 0:
                         self.collect["points"] -= 1
                         
-                        if self.collect_type == "honey":
-                            print("replacing mesh")
-                            self.replaceMesh("Cube.001")
-                        self.carrying = scene.addObject(self.collect_type + "fragment", self)
-                        
-                    else:
+                        self.carry_type = self.collect["type"]
+                        self.carry_category = self.collect["category"]
+                        self.carrying = scene.addObject(self.carry_type + "fragment", self)
+#                        if self.collect_type == "honey":
+#                            print("replacing mesh")
+#                            self.replaceMesh("Cube.001")
+                    
+                    # if we grabbed the last one, make resource vanish
+                    if self.collect["points"] <= 0:
                         print("resource run out")
-                        
+                
                         self.collect.parent.endObject()
                         self.collect.endObject()
-                        self.collect = None
-                        bge.logic.globalDict[self.collect_category + "workers"] -= 1
-                        #send him back
-                        self.target = Vector((0, 0, 0))
-                    
-                    # determine nearest possible dropoff point
-                    if self.collect_type == "leaf":
-                        self.destination = self.find_nearest(['Farm'])
-                    elif self.collect_type == "honey":
-                        self.destination = self.find_nearest(['Honey Den'])    
-                    else:
-                        self.destination = self.find_nearest(['Storage', 'Den'])
                         
-                    if self.destination is None:
-                        self.destination = self.find_nearest(['Storage', 'Den'])
-
-                    if self.destination is None:
-                        bge.logic.sendMessage("notify", "Nowhere to store resources!!")
-                    
-                    self.target = self.destination.worldPosition.copy()
-                    
-        else:
+                    self.go_drop()
+                        
+            else:
+                #send him back
+                self.update_workercount(recount=True)
+                self.go_get(None)
+                
+            
+        elif self.mode == "DROP":
+            # return with resource
+            if (self.worldPosition - self.destination.worldPosition).length < 1.5:
+                print("turning in resource")
+                
+                if self.collect_category == "food":
+                    if "stored" in self.destination:
+                        self.destination['stored'] += 1
+                    else:
+                        increase_resource(self, "food")
+                else:
+                    increase_resource(self, self.carry_category)
+                
+                if self.carrying:
+                    self.carrying.endObject()
+                    self.carrying = None
+                
+                # go back for more
+                self.go_get(self.collect)
+                
+            
+        elif self.mode == "GOBACK":
             # if resource is gone but we still are carrying some around
             if self.carrying is not None:
-                # return with resource
-                if (self.worldPosition - self.destination.worldPosition).length < 1.5:
-                    print("turning in resource")
-                    self.carrying = None
+                self.mode = "DROP"
+            
+        if self.carrying is not None and not self.carrying.invalid:
+            self.carrying.worldPosition = self.worldPosition                
+
         
         
         # other stuff        

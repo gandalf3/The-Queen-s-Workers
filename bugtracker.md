@@ -19,9 +19,9 @@ FIXED: ants don't always go to the special food buildings
 
 BUG: ants react to clicks on the GUI
 
-BUG: ants can still sometimes leave their carried stuff in mid-air in some cases (need to find out what exact sequence of events causes this)
+FIXED: ants can still sometimes leave their carried stuff in mid-air in some cases (need to find out what exact sequence of events causes this)
 
-BUG: worker counters just become plain wrong over time
+FIXED: worker counters just become plain wrong over time
 
 FIXED: camera control doesn't work in standalone player, reports of it being hard to control
 
@@ -39,7 +39,7 @@ FIXED: storage does nothing
 
 BUG: roads do nothing (ants ignore em :/)
 
-BUG: ants get confused if you tell them to collect a different resource while they are already carrying a resource back
+FIXED: ants get confused if you tell them to collect a different resource while they are already carrying a resource back
 
 FEATURE REQUEST: MMB to pan camera
 
