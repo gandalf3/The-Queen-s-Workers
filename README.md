@@ -14,11 +14,11 @@ A collaborative game project BGMC 21
 Made by:
 
 * ARadish         concept, modeling, art, etc
-* gandalf3        game mechanics. python. (made everything work and look cool)
-* GiantCowFilms   python patching and the map mechanics
-* X-27            building system, other game mechanics, some prettyifiying, implemented easter egg.
+* gandalf3        game mechanics. python. pretty much evreything else. (made everything look cool and actually work)
+* GiantCowFilms   python patching, the mini map mechanics, and messing stuff up
+* X-27            building system, other game mechanics, some prettyifiying, implemented the real, (hard to find) easter egg. 
 
-^^^ that was a big hint - you wouldn't have possibly found the buttons to activate the Easter Egg without reading this file.
+^^^ that was a big hint - you wouldn't have possibly found which buttons activate the Easter Egg without reading this file.
 
 
 ## Legal mumbo-jumbo:
