@@ -231,11 +231,21 @@ def increment_day():
             
             spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
             
-<<<<<<< HEAD
+    gd = bge.logic.globalDict
+    gd["foodworkers"] = 0
+    gd["materialworkers"] = 0
+    gd["scienceworkers"] = 0
+    gd["idleworkers"] = 0
+    
+    for ant in Ant.antlist:
+        if ant.collect is not None and not ant.collect.invalid:
+            gd[ant.collect["category"] + "workers"] += 1
+        else:
+            gd["idleworkers"] += 1
+                    
+    bge.logic.sendMessage("GUI")
             
-=======
 
->>>>>>> f237124bb25f806368f19cb5b66e652352f2f276
     if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
         if bge.logic.globalDict["havewon"] != True:
             bge.logic.globalDict["havewon"] = True

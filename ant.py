@@ -197,7 +197,7 @@ class Ant(bge.types.BL_ArmatureObject):
     
     def update_workercount(self, recount=False):
         gd = bge.logic.globalDict
-        
+        print(gd["idleworkers"])
         if recount:
             gd["foodworkers"] = 0
             gd["materialworkers"] = 0
@@ -205,8 +205,9 @@ class Ant(bge.types.BL_ArmatureObject):
             gd["idleworkers"] = 0
             
             for ant in Ant.antlist:
-                if ant.collect:
-                    gd[category + "workers"] += 1
+                if ant.collect is not None and not ant.collect.invalid:
+                    print(ant.collect["category"])
+                    gd[ant.collect["category"] + "workers"] += 1
                 else:
                     gd["idleworkers"] += 1
                     
@@ -241,7 +242,7 @@ class Ant(bge.types.BL_ArmatureObject):
                 self.go_back()
                 
         
-        self.update_workercount()
+        #self.update_workercount()
         
             
     def go_back(self):
@@ -343,7 +344,7 @@ class Ant(bge.types.BL_ArmatureObject):
                         
             else:
                 #send him back
-                self.update_workercount(recount=True)
+                #self.update_workercount(recount=True)
                 self.go_get(None)
                 self.go_back()
                 
