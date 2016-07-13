@@ -23,20 +23,13 @@ class Ant(bge.types.BL_ArmatureObject):
         bge.logic.globalDict["pop"] = len(Ant.antlist)
         
         
-        # Tasks
-        
-        # Go here
-        # Stay here
-        
-        #self.task = 
-        
-        
-        # modes:
+        # Modes:
         
         # DROP: drop off self.carrying at an appropriate building
         # GOGET: go to self.collect
         # GOTO: go to self.target
         # GOBACK: go to 0,0
+        
         self.mode = "GOTO"
         
         self.idle = True
@@ -78,7 +71,6 @@ class Ant(bge.types.BL_ArmatureObject):
     
     def eat(self):
         if self.ticks_since_last_meal > 900:
-            print(bge.logic.globalDict["food"])
             if bge.logic.globalDict["food"] > 0:
                 bge.logic.globalDict["food"] -= 1
                 bge.logic.sendMessage("GUI")
@@ -131,7 +123,6 @@ class Ant(bge.types.BL_ArmatureObject):
         
         obstacle = self.rayCastTo(ahead, self.vision_distance, "obstacle")
         if obstacle:
-            #print("watch out", obstacle)
             dist, go_around, l = self.getVectTo(obstacle)
             
             if dist < self.vision_distance:
@@ -300,7 +291,6 @@ class Ant(bge.types.BL_ArmatureObject):
                         
                         # only resources have a "points" property
                         if "points" in obj:
-                            print("You clicked a Resource!")
                             self.go_get(obj)
 
                         else:
@@ -330,7 +320,6 @@ class Ant(bge.types.BL_ArmatureObject):
             if self.collect is not None:
                 # go get resource
                 if (self.worldPosition - self.collect.worldPosition).length < 1.5:
-                    print("picking up resource")
                         
                     if self.collect["points"] > 0:
                         self.collect["points"] -= 1
@@ -344,7 +333,6 @@ class Ant(bge.types.BL_ArmatureObject):
                     
                     # if we grabbed the last one, make resource vanish
                     if self.collect["points"] <= 0:
-                        print("resource run out")
                 
                         self.collect.parent.endObject()
                         self.collect.endObject()
@@ -360,7 +348,6 @@ class Ant(bge.types.BL_ArmatureObject):
         elif self.mode == "DROP":
             # return with resource
             if (self.worldPosition - self.destination.worldPosition).length < 1.5:
-                print("turning in resource")
                 
                 if self.collect_category == "food":
                     if "stored" in self.destination:
