@@ -205,7 +205,7 @@ class Ant(bge.types.BL_ArmatureObject):
             gd["idleworkers"] = 0
             
             for ant in Ant.antlist:
-                if collect:
+                if ant.collect:
                     gd[category + "workers"] += 1
                 else:
                     gd["idleworkers"] += 1
@@ -245,7 +245,7 @@ class Ant(bge.types.BL_ArmatureObject):
         
             
     def go_back(self):
-        self.return_home_timer = 0
+        self.return_home_timer = None
         self.go_to(Vector((0,-3,0)))
         
         
@@ -309,11 +309,10 @@ class Ant(bge.types.BL_ArmatureObject):
             
             #have we arrived (away from home)?
             if (Vector((0,-3,0)) - self.target).length > 1.5:
-                
                 if (self.worldPosition - self.target).length < 1.5:
+
                     if self.return_home_timer is not None and self.return_home_timer < 1:
-                        self.target = Vector((0,-3,0))
-                        self.return_home_timer = None
+                        self.go_back()
                     elif self.return_home_timer is None:
                         self.return_home_timer = 60 * 10
                     
@@ -338,7 +337,7 @@ class Ant(bge.types.BL_ArmatureObject):
                     if self.collect["points"] <= 0:
                 
                         self.collect.parent.endObject()
-                        self.collect.endObject()
+                        self.collect.endObject()  
                         
                     self.go_drop()
                         
@@ -346,6 +345,7 @@ class Ant(bge.types.BL_ArmatureObject):
                 #send him back
                 self.update_workercount(recount=True)
                 self.go_get(None)
+                self.go_back()
                 
             
         elif self.mode == "DROP":
