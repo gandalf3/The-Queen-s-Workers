@@ -11,4 +11,5 @@ def main(cont):
         # spawn popup offscreen so it can transition onscreen smoothly
         control.worldPosition.y += 10
         bge.logic.getCurrentScene().addObject("Build_popup_menu", control)
+        bge.logic.sendMessage("menu_open")
         control.worldPosition.y -= 10
