@@ -352,7 +352,7 @@ class Ant(bge.types.BL_ArmatureObject):
             # return with resource
             if (self.worldPosition - self.destination.worldPosition).length < 1.5:
                 
-                if self.collect_category == "food":
+                if self.carry_category == "food":
                     if "stored" in self.destination:
                         self.destination['stored'] += 1
                     else:
