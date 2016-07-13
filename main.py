@@ -148,6 +148,7 @@ def initialize(cont):
     if sens.positive:
         
         bge.logic.addScene('GUI')
+        bge.logic.addScene('Map')
         
         bge.logic.globalDict["food"] = 50
         bge.logic.globalDict["material"] = 50
@@ -229,25 +230,7 @@ def increment_day():
             
             spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
             
-            
-    # recalc worker counts every day.
-    # TODO: ideally ants *should* set these as they are ordered about, but thats a big mess ATM so for now do this
-    
-    gd = bge.logic.globalDict
-    gd["foodworkers"] = 0
-    gd["materialworkers"] = 0
-    gd["scienceworkers"] = 0
-    
-    for ant in Ant.antlist:
-        if ant.collect:
-            if ant.collect_category == "food":
-                gd["foodworkers"] += 1
-            elif ant.collect_category == "material":
-                gd["materialworkers"] += 1
-            elif ant.collect_category == "science":
-                gd["materialworkers"] += 1
-    
-    
+
     if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
         if bge.logic.globalDict["havewon"] != True:
             bge.logic.globalDict["havewon"] = True
