@@ -38,3 +38,9 @@ PARTIALLY FIXED: ending suzanne doesn't go away, making continuing play nearly i
 FIXED: storage does nothing
 
 BUG: roads do nothing (ants ignore em :/)
+
+BUG: ants get confused if you tell them to collect a different resource while they are already carrying a resource back
+
+FEATURE REQUEST: MMB to pan camera
+
+BUG: shadows get severly and obviously clipped during winter. Perhaps increase shadow frustum size?
