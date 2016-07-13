@@ -19,8 +19,9 @@ def dismiss(cont):
             own["dismissed"] = True
             own.playAction("Build_popup_menu_dismiss", 0, 10)
             bge.logic.sendMessage("dismiss_clickblocker")
+            bge.logic.sendMessage("menu_closed")
         
     # only die after exit animation is done
     if own["dismissed"] == True:
-        if not own.isPlayingAction():   
+        if not own.isPlayingAction():
             own.endObject()

@@ -148,6 +148,7 @@ def initialize(cont):
     if sens.positive:
         
         bge.logic.addScene('GUI')
+        bge.logic.addScene('Map')
         
         bge.logic.globalDict["food"] = 50
         bge.logic.globalDict["material"] = 50
@@ -157,6 +158,7 @@ def initialize(cont):
         bge.logic.globalDict["foodworkers"] = 0
         bge.logic.globalDict["materialworkers"] = 0
         bge.logic.globalDict["scienceworkers"] = 0
+        bge.logic.globalDict["idleworkers"] = 0
         
         bge.logic.globalDict["max_food"] = 50
         bge.logic.globalDict["max_material"] = 50
@@ -229,7 +231,11 @@ def increment_day():
             
             spawn_resource(["Grass patch 1", "Grass patch 2"], 100, 150)
             
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> f237124bb25f806368f19cb5b66e652352f2f276
     if bge.logic.globalDict["science"] >= bge.logic.globalDict["max_science"]:
         if bge.logic.globalDict["havewon"] != True:
             bge.logic.globalDict["havewon"] = True
