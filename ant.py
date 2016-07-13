@@ -274,6 +274,9 @@ class Ant(bge.types.BL_ArmatureObject):
         
     def main(self):
         scene = bge.logic.getCurrentScene()
+        for s in bge.logic.getSceneList():
+            if s.name == "wait for pause":
+                pscene = s
         
         # check for invalid gameobject references
         if self.collect is not None and self.collect.invalid:
@@ -282,7 +285,7 @@ class Ant(bge.types.BL_ArmatureObject):
             self.destination = None
         
         # order taking
-        if not scene.objects["Placement_Empty"]['BuildModeActive']:
+        if not scene.objects["Placement_Empty"]['BuildModeActive'] and pscene.objects["OpenMenuControls"]["OpenMenus?"]:
             if self["selected"]:
                 if self.sensors["Click"].positive:
                     if self.sensors["CanGo"].positive:
