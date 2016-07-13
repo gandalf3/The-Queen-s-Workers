@@ -25,7 +25,7 @@ BUG: worker counters just become plain wrong over time
 
 FIXED: camera control doesn't work in standalone player, reports of it being hard to control
 
-BUG: ants just stop when the resource they were collecting runs out. Can make ants hard to find (need to determine best way to solve this; add 'summon idle ants' button to call them back to base? make them return automatically?)
+FIXED: ants just stop when the resource they were collecting runs out. Can make ants hard to find (need to determine best way to solve this; add 'summon idle ants' button to call them back to base? make them return automatically?)
 
 BUG: lack of visual feedback/any kind of indication that food buildings are operating (looks confusing when resources disapear into them and nothing happens immediatly)
 
