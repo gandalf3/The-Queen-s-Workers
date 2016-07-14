@@ -18,9 +18,9 @@ Made by:
 * ARadish         concept, modeling, art, etc
 * gandalf3        game mechanics. python. pretty much evreything else. (made everything look cool and actually work)
 * GiantCowFilms   python patching, the mini map mechanics, and messing stuff up
-* X-27            building system, end sequence, other miscolanious game mechanics, some prettyifiying, and implemented the real, (hard to find) easter egg. 
+* X27            building system, end sequence, other miscolanious game mechanics, some prettyifiying, and implemented the real, (hard to find) easter egg. 
 
-^^^ that was a big hint - you wouldn't have possibly found which buttons activate the Easter Egg without reading this file.
+^^^ here is another big hint for the Easter Egg: Notice, it does not say, "X-27" but only "X27."
 
 
 ## Legal mumbo-jumbo:
