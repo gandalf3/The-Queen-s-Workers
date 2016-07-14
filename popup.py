@@ -13,7 +13,6 @@ def on_summon(cont):
 def dismiss(cont):
     own = cont.owner
     mouse_over = own.sensors["MouseOver"]
-    
     # dismiss popup if click event is registered *not* over the popup
     if mouse_over.getButtonStatus(bge.events.LEFTMOUSE) == bge.logic.KX_INPUT_JUST_ACTIVATED and not mouse_over.positive:
             own["dismissed"] = True
