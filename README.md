@@ -22,6 +22,8 @@ Made by:
 
 ^^^ here is another big hint for the Easter Egg: Notice, it does not say, "X-27" but only "X27."
 
+FOr those of you having a really hard time finding it, here is another hint: "Use the numpad, and don't release until your done"
+
 
 ## Legal mumbo-jumbo:
 
