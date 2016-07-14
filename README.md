@@ -8,7 +8,8 @@ A collaborative game project BGMC 21
 3. LMB command ants; Pressing LMB on a resource tells the selected ants to collect it
 4. Build buildings to process collected resources more efficiently. 
 5. Activate built resource buildings by delivering the apropriate resource to them. (honey for the honey farm, and leafs for the fungus farm)
-6. Enjoy!
+6. A large resource farm building will produce 10 food for every 1 food resource delivered to it. a small resource farm building will produce 5 food for every 1 delivered to it.
+7. Enjoy!
 
 ----
 
